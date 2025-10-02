@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-release:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -16,29 +16,29 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.9'
+        python-version: '3.10' # 可选 3.7~3.11
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install nuitka
-        pip install PyQt5 qfluentwidgets
+        pip install PyQt5 QFluentWidgets
         pip install -r requirements.txt || true
 
     - name: Build with Nuitka
       run: |
-        mkdir -p dist
-        python -m nuitka xianmetro/main.py \
-          --standalone \
-          --enable-plugin=qt \
-          --output-dir=dist \
-          --include-package=xianmetro \
-          --include-data-dir=xianmetro/assets=xianmetro/assets \
+        mkdir dist
+        python -m nuitka xianmetro/main.py ^
+          --standalone ^
+          --enable-plugin=qt ^
+          --output-dir=dist ^
+          --include-package=xianmetro ^
+          --include-data-dir=xianmetro/assets=xianmetro/assets ^
           --nofollow-import-to=tests
 
     - name: Package artifact
       run: |
-        zip -r xianmetro_nuitka.zip dist/
+        powershell Compress-Archive -Path dist\* -DestinationPath xianmetro_nuitka.zip
 
     - name: Upload Release
       uses: softprops/action-gh-release@v2

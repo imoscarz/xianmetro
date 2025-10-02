@@ -141,7 +141,7 @@ class MetroPlannerUI(QWidget):
             info_label = TextEdit()
             info_label.setFont(QFont("Microsoft YaHei", 11))
             info_label.setReadOnly(True)
-            info_label.setMaximumHeight(90)
+            info_label.setMaximumHeight(130)
             info_label.setMinimumHeight(32)
             info_label.setStyleSheet("background: #f7fafd; border:none; color:#444;")
 
@@ -155,7 +155,7 @@ class MetroPlannerUI(QWidget):
 
             # 路径列表
             result_list = ListWidget()
-            result_list.setFont(QFont("Microsoft YaHei", 14))
+            result_list.setFont(QFont("Microsoft YaHei", 17))
             result_list.setStyleSheet(
                 "background-color: #f4f7fa; border-radius: 10px; border:1px solid #dbeaf5;"
             )

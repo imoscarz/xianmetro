@@ -1,0 +1,5 @@
+.venv
+.conda
+.idea
+**/**/__pycache__/
+**/**/metro_info.json

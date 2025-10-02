@@ -3,7 +3,11 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPalette, QBrush, QPixmap
+
 from qfluentwidgets import TitleLabel, LineEdit, PrimaryPushButton, ListWidget, TextEdit
+
+# 新增：导入 QGraphicsBlurEffect
+from PyQt5.QtWidgets import QGraphicsBlurEffect
 
 class MetroPlannerUI(QWidget):
     def __init__(self):
@@ -23,6 +27,25 @@ class MetroPlannerUI(QWidget):
         palette.setBrush(QPalette.Window, QBrush(pixmap))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
+
+        # 新增：创建一个覆盖整个窗口的 QLabel 用于模糊背景
+        self.bg_label = QLabel(self)
+        self.bg_label.setPixmap(pixmap)
+        self.bg_label.setGeometry(0, 0, self.width(), self.height())
+        self.bg_label.lower()  # 确保在最底层
+
+        # 应用模糊效果
+        blur_effect = QGraphicsBlurEffect()
+        blur_effect.setBlurRadius(30)  # 模糊半径可调整
+        self.bg_label.setGraphicsEffect(blur_effect)
+
+        # 保证窗口大小变化时背景也自适应
+        self.bg_label.setScaledContents(True)
+        self.resizeEvent = self._resize_event_with_bg
+
+    def _resize_event_with_bg(self, event):
+        self.bg_label.setGeometry(0, 0, self.width(), self.height())
+        event.accept()
 
     def _init_ui(self):
         # Parallel Layout: 左侧输入区，右侧结果区
@@ -51,6 +74,7 @@ class MetroPlannerUI(QWidget):
         self.start_input = LineEdit()
         self.start_input.setPlaceholderText("请输入起点站名或站点ID")
         self.start_input.setMaximumWidth(320)
+        self.start_input.setFixedHeight(50)
         self.start_input.setFont(QFont("Microsoft YaHei", 12))
 
         self.end_label = QLabel("终点站:")
@@ -58,6 +82,7 @@ class MetroPlannerUI(QWidget):
         self.end_input = LineEdit()
         self.end_input.setPlaceholderText("请输入终点站名或站点ID")
         self.end_input.setMaximumWidth(320)
+        self.end_input.setFixedHeight(50)
         self.end_input.setFont(QFont("Microsoft YaHei", 12))
 
         input_layout.addWidget(self.start_label)
@@ -76,7 +101,7 @@ class MetroPlannerUI(QWidget):
 
         # 左侧占据约30%
         left_layout.addStretch()
-        left_widget.setFixedWidth(int(self.width() * 0.32))
+        left_widget.setFixedWidth(int(self.width() * 0.37))
         main_layout.addWidget(left_widget, 30)
 
         # 右侧：三种方案列
@@ -100,7 +125,7 @@ class MetroPlannerUI(QWidget):
             info_label = TextEdit()
             info_label.setFont(QFont("Microsoft YaHei", 11))
             info_label.setReadOnly(True)
-            info_label.setMaximumHeight(38)
+            info_label.setMaximumHeight(90)
             info_label.setMinimumHeight(32)
             info_label.setStyleSheet("background: #f7fafd; border:none; color:#444;")
 
@@ -114,7 +139,7 @@ class MetroPlannerUI(QWidget):
 
             # 路径列表
             result_list = ListWidget()
-            result_list.setFont(QFont("Microsoft YaHei", 12))
+            result_list.setFont(QFont("Microsoft YaHei", 14))
             result_list.setStyleSheet(
                 "background-color: #f4f7fa; border-radius: 10px; border:1px solid #dbeaf5;"
             )

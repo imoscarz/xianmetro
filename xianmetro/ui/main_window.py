@@ -1,10 +1,11 @@
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSizePolicy, QSpacerItem
+    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSizePolicy, QSpacerItem,
+    QScrollArea, QFrame
 )
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont, QPalette, QBrush, QPixmap
+from PyQt5.QtGui import QFont, QPalette, QBrush, QPixmap, QIcon
 
-from qfluentwidgets import TitleLabel, LineEdit, PrimaryPushButton, ListWidget, TextEdit
+from qfluentwidgets import TitleLabel, LineEdit, PrimaryPushButton, PushButton, TextEdit
 
 # 新增：导入 QGraphicsBlurEffect
 from PyQt5.QtWidgets import QGraphicsBlurEffect
@@ -126,10 +127,11 @@ class MetroPlannerUI(QWidget):
         right_layout.setContentsMargins(0, 48, 40, 48)
         right_layout.setSpacing(22)
 
-        # 方案区布局
+        # 新增：存储滚动区和布局
         self.result_areas = []
         self.result_info_labels = []
-        self.result_lists = []
+        self.result_scrolls = []  # 替换原 result_lists
+        self.result_vlayouts = []  # 竖直布局
 
         for title_text in ["最少换乘方案", "最少站点方案", "最短距离方案"]:
             area_widget = QWidget()
@@ -137,15 +139,12 @@ class MetroPlannerUI(QWidget):
             area_layout.setContentsMargins(0, 0, 0, 0)
             area_layout.setSpacing(10)
 
-            # 路径信息显示（如距离、换乘数等）
             info_label = TextEdit()
             info_label.setFont(QFont("Microsoft YaHei", 11))
             info_label.setReadOnly(True)
             info_label.setMaximumHeight(130)
             info_label.setMinimumHeight(32)
             info_label.setStyleSheet("background: #f7fafd; border:none; color:#444;")
-
-            # 标题
             scheme_label = QLabel(title_text)
             scheme_label.setFont(QFont("Microsoft YaHei", 13, QFont.Bold))
             scheme_label.setStyleSheet("color: #0078d7; margin-bottom: 2px;")
@@ -153,42 +152,83 @@ class MetroPlannerUI(QWidget):
             area_layout.addWidget(info_label)
             self.result_info_labels.append(info_label)
 
-            # 路径列表
-            result_list = ListWidget()
-            result_list.setFont(QFont("Microsoft YaHei", 17))
-            result_list.setStyleSheet(
-                "background-color: #f4f7fa; border-radius: 10px; border:1px solid #dbeaf5;"
-            )
-            result_list.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-            area_layout.addWidget(result_list, stretch=1)
-            self.result_lists.append(result_list)
+            # 新增：竖直滚动区域
+            scroll_area = QScrollArea()
+            scroll_area.setWidgetResizable(True)
+            scroll_area.setStyleSheet("background: #f4f7fa; border-radius: 10px; border:1px solid #dbeaf5;")
+            scroll_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            # 内容区
+            scroll_content = QWidget()
+            vlayout = QVBoxLayout(scroll_content)
+            vlayout.setSpacing(8)
+            vlayout.setContentsMargins(10, 10, 10, 10)
+            scroll_area.setWidget(scroll_content)
+            area_layout.addWidget(scroll_area, stretch=1)
 
-            right_layout.addWidget(area_widget, 1)
+            self.result_scrolls.append(scroll_area)
+            self.result_vlayouts.append(vlayout)
             self.result_areas.append(area_widget)
+            right_layout.addWidget(area_widget, 1)
 
         main_layout.addWidget(right_widget, 70)
 
-    # UI getter methods for controller connection
+    # 新增清空与添加方法
+    def clear_result_area(self, idx):
+        layout = self.result_vlayouts[idx]
+        while layout.count():
+            item = layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
+
+    def add_result_item(self, idx, text, icon=None):
+        btn = PushButton(text)
+        btn.setFont(QFont("Microsoft YaHei", 17))
+        btn.setEnabled(False)  # 禁用点击
+        btn.setStyleSheet("""
+                QPushButton {
+                    background-color: #f3f8fb;
+                    border-radius: 8px;
+                    margin-bottom: 2px;
+                    padding: 10px 18px;
+                    font-size: 17px;
+                    color: #333;
+                    border: 1px solid #c8e0f0;
+                }
+                QPushButton:disabled {
+                    color: #666;
+                }
+            """)
+        if icon:
+            btn.setIcon(QIcon(icon))
+            btn.setIconSize(btn.sizeHint())
+        self.result_vlayouts[idx].addWidget(btn)
+
+    # 接口兼容原 ListWidget 批量添加
+    def set_least_transfer_result(self, lines: list, info_text: str = "", icon_list=None):
+        self.clear_result_area(0)
+        icon_list = icon_list or [None] * len(lines)
+        for text, icon in zip(lines, icon_list):
+            self.add_result_item(0, text, icon)
+        self.result_info_labels[0].setText(info_text)
+
+    def set_least_stops_result(self, lines: list, info_text: str = "", icon_list=None):
+        self.clear_result_area(1)
+        icon_list = icon_list or [None] * len(lines)
+        for text, icon in zip(lines, icon_list):
+            self.add_result_item(1, text, icon)
+        self.result_info_labels[1].setText(info_text)
+
+    def set_shortest_distance_result(self, lines: list, info_text: str = "", icon_list=None):
+        self.clear_result_area(2)
+        icon_list = icon_list or [None] * len(lines)
+        for text, icon in zip(lines, icon_list):
+            self.add_result_item(2, text, icon)
+        self.result_info_labels[2].setText(info_text)
+
+    # 兼容原 getter
     def get_start_station(self):
         return self.start_input.text()
 
     def get_end_station(self):
         return self.end_input.text()
-
-    def set_least_transfer_result(self, lines: list, info_text: str = ""):
-        self.result_lists[0].clear()
-        for item in lines:
-            self.result_lists[0].addItem(item)
-        self.result_info_labels[0].setText(info_text)
-
-    def set_least_stops_result(self, lines: list, info_text: str = ""):
-        self.result_lists[1].clear()
-        for item in lines:
-            self.result_lists[1].addItem(item)
-        self.result_info_labels[1].setText(info_text)
-
-    def set_shortest_distance_result(self, lines: list, info_text: str = ""):
-        self.result_lists[2].clear()
-        for item in lines:
-            self.result_lists[2].addItem(item)
-        self.result_info_labels[2].setText(info_text)

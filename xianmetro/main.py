@@ -69,7 +69,9 @@ def main():
         """
         start_input = window.get_start_station().strip()
         end_input = window.get_end_station().strip()
-
+        if start_input == "imoscarz":
+            show_message(window, "You Found The Easter egg\n欢迎使用西安地铁线路规划器！\n作者: imoscarz\nGitHub:https://github.com/imoscarz/xianmetro")
+            return
         # 允许输入站名或ID，优先ID
         start_id = stations.get(start_input) and start_input
         end_id = stations.get(end_input) and end_input
@@ -80,12 +82,17 @@ def main():
             end_id = name_to_id(stations, end_input)
 
         if not start_id or not end_id:
-            show_message(window, "无效的起点或终点，请输入正确的站点名或ID！")
+            show_message(window, "请输入有效的起点和终点（支持站名或ID）！")
             for idx in range(3):
                 window.clear_result_area(idx)
                 window.result_info_labels[idx].setText("")
             return
-
+        if start_id == end_id:
+            show_message(window, "你搁这原地TP呢？起点和终点不能相同！")
+            for idx in range(3):
+                window.clear_result_area(idx)
+                window.result_info_labels[idx].setText("")
+            return
         # 路径规划
         results = []
         for strategy in [1, 2, 3]:

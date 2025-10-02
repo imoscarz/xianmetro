@@ -1,0 +1,47 @@
+name: Build and Release with Nuitka
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install nuitka
+        pip install -r requirements.txt || true
+
+    - name: Build with Nuitka
+      run: |
+        mkdir -p dist
+        python -m nuitka xianmetro/main.py \
+          --standalone \
+          --enable-plugin=qt-plugins \
+          --output-dir=dist \
+          --include-package=xianmetro \
+          --include-data-dir=xianmetro/assets=xianmetro/assets \
+          --nofollow-import-to=tests
+
+    - name: Package artifact
+      run: |
+        zip -r xianmetro_nuitka.zip dist/
+
+    - name: Upload Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: xianmetro_nuitka.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

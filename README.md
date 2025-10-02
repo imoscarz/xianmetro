@@ -10,7 +10,7 @@
 
 ### 使用技术
 - Python编程语言
-- 图论算法（如Dijkstra算法）用于路径计算
+- 图论算法（如Dijkstra算法、BFS）用于路径计算
 - PyQt5用于图形用户界面设计
 - Requests库用于数据获取
 - json库用于数据处理

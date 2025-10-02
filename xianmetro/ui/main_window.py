@@ -1,11 +1,11 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSizePolicy, QSpacerItem,
-    QScrollArea, QFrame
+    QFrame
 )
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPalette, QBrush, QPixmap, QIcon
 
-from qfluentwidgets import TitleLabel, LineEdit, PrimaryPushButton, PushButton, TextEdit
+from qfluentwidgets import TitleLabel, LineEdit, PrimaryPushButton, PushButton, TextEdit, SmoothScrollArea
 
 # 新增：导入 QGraphicsBlurEffect
 from PyQt5.QtWidgets import QGraphicsBlurEffect
@@ -142,9 +142,9 @@ class MetroPlannerUI(QWidget):
             info_label = TextEdit()
             info_label.setFont(QFont("Microsoft YaHei", 11))
             info_label.setReadOnly(True)
-            info_label.setMaximumHeight(130)
+            info_label.setMaximumHeight(150)
             info_label.setMinimumHeight(32)
-            info_label.setStyleSheet("background: #f7fafd; border:none; color:#444;")
+            info_label.setStyleSheet("background: #f7fafd; border:none; color:#444; border-radius: 10px;")
             scheme_label = QLabel(title_text)
             scheme_label.setFont(QFont("Microsoft YaHei", 13, QFont.Bold))
             scheme_label.setStyleSheet("color: #0078d7; margin-bottom: 2px;")
@@ -152,8 +152,8 @@ class MetroPlannerUI(QWidget):
             area_layout.addWidget(info_label)
             self.result_info_labels.append(info_label)
 
-            # 新增：竖直滚动区域
-            scroll_area = QScrollArea()
+            # 修改为 SmoothScrollArea
+            scroll_area = SmoothScrollArea()
             scroll_area.setWidgetResizable(True)
             scroll_area.setStyleSheet("background: #f4f7fa; border-radius: 10px; border:1px solid #dbeaf5;")
             scroll_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -191,7 +191,7 @@ class MetroPlannerUI(QWidget):
                     border-radius: 8px;
                     margin-bottom: 2px;
                     padding: 10px 18px;
-                    font-size: 17px;
+                    font-size: 19px;
                     color: #333;
                     border: 1px solid #c8e0f0;
                 }

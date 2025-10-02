@@ -90,14 +90,30 @@ class MetroPlannerUI(QWidget):
         input_layout.addWidget(self.end_label)
         input_layout.addWidget(self.end_input)
 
+        # --- 新增中心对齐 ---
+        input_layout.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
+
         left_layout.addLayout(input_layout)
 
-        # 按钮
+        # 按钮区域（水平布局，包含“开始规划”和“刷新路线”按钮）
+        btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(18)
+        btn_layout.setAlignment(Qt.AlignCenter)
+
         self.plan_btn = PrimaryPushButton("开始规划")
         self.plan_btn.setFont(QFont("Microsoft YaHei", 13))
         self.plan_btn.setFixedWidth(180)
         self.plan_btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        left_layout.addWidget(self.plan_btn)
+
+        self.refresh_btn = PrimaryPushButton("刷新路线")
+        self.refresh_btn.setFont(QFont("Microsoft YaHei", 13))
+        self.refresh_btn.setFixedWidth(180)
+        self.refresh_btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+
+        btn_layout.addWidget(self.plan_btn)
+        btn_layout.addWidget(self.refresh_btn)
+
+        left_layout.addLayout(btn_layout)
 
         # 左侧占据约30%
         left_layout.addStretch()

@@ -72,6 +72,9 @@ def main():
         if start_input == "imoscarz":
             show_message(window, "You Found The Easter egg\n欢迎使用西安地铁线路规划器！\n作者: imoscarz\nGitHub:https://github.com/imoscarz/xianmetro")
             return
+        if end_input == "imoscarz":
+            show_message(window, "You Found The Easter egg\n缪尔塞斯真的很可爱！！！！！")
+            return
         # 允许输入站名或ID，优先ID
         start_id = stations.get(start_input) and start_input
         end_id = stations.get(end_input) and end_input

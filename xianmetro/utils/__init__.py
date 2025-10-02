@@ -4,3 +4,4 @@ __author__ = "imoscarz"
 __description__ = "Utility functions for various calculations."
 
 from .calc_distance import *
+from .calc_price import *

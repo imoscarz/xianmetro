@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QApplication
 from xianmetro.ui.main_window import MetroPlannerUI
 from xianmetro.core import plan_route, parse_stations, id_to_name, name_to_id
 from xianmetro.fetch import get_metro_info, parse_metro_info, save_to_file
-from xianmetro.utils.calc_price import calc_price
+from xianmetro.utils import calc_price
 
 from qfluentwidgets import MessageBox , InfoBarIcon
 

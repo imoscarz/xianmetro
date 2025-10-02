@@ -65,7 +65,14 @@ def main():
 
     def update_routes():
         """
-        路径规划并输出到界面（新版：竖直滚动+按钮item支持icon）
+        更新并显示三种策略的路线规划结果
+        1. 最少换乘
+        2. 最少站点
+        3. 最短距离
+        允许输入站名或ID，优先ID
+        结果显示每个站点一行，包含上车、换乘和下车提示
+        结果显示总站点数、总距离、换乘次数和票价信息
+        处理无效输入和相同起终点的情况
         """
         start_input = window.get_start_station().strip()
         end_input = window.get_end_station().strip()
@@ -122,9 +129,15 @@ def main():
                 window.result_info_labels[idx].setText("")
 
     def on_plan_clicked():
+        """
+        规划路线按钮点击事件
+        """
         update_routes()
 
     def on_refresh_clicked():
+        """
+        刷新地铁数据
+        """
         try:
             metro_json = get_metro_info()
             metro_info = parse_metro_info(metro_json)

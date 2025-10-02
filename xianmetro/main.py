@@ -1,9 +1,11 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMessageBox
+from PyQt5.QtWidgets import QApplication
 from xianmetro.ui.main_window import MetroPlannerUI
 from xianmetro.core import plan_route, parse_stations, id_to_name, name_to_id
 from xianmetro.fetch import get_metro_info, parse_metro_info, save_to_file
 from xianmetro.utils.calc_price import calc_price
+
+from qfluentwidgets import MessageBox , InfoBarIcon
 
 def format_route_output_verbose(route, stations):
     """
@@ -39,13 +41,14 @@ def format_route_output_verbose(route, stations):
             icon_list.append("xianmetro/assets/icon_end.png")
     return output, icon_list
 
-def show_message(window, msg, icon=QMessageBox.Information):
-    msg_box = QMessageBox(window)
-    msg_box.setIcon(icon)
-    msg_box.setText(msg)
-    msg_box.setWindowTitle("提示")
-    msg_box.setStandardButtons(QMessageBox.Ok)
-    msg_box.exec_()
+def show_message(window, msg):
+    # 使用 qfluentwidgets 的 MessageDialog
+    dlg = MessageBox (
+        title="提示",
+        content=msg,
+        parent=window
+    )
+    dlg.exec_()
 
 def get_price_text(distance):
     price = calc_price(int(distance + 0.5))
@@ -77,7 +80,7 @@ def main():
             end_id = name_to_id(stations, end_input)
 
         if not start_id or not end_id:
-            show_message(window, "无效的起点或终点，请输入正确的站点名或ID！", QMessageBox.Warning)
+            show_message(window, "无效的起点或终点，请输入正确的站点名或ID！")
             for idx in range(3):
                 window.clear_result_area(idx)
                 window.result_info_labels[idx].setText("")
@@ -119,9 +122,9 @@ def main():
             nonlocal stations
             stations = parse_stations()
             show_message(window, "地铁数据已刷新成功！")
-            update_routes()
+            # update_routes()
         except Exception as e:
-            show_message(window, f"地铁数据刷新失败: {e}", QMessageBox.Critical)
+            show_message(window, f"地铁数据刷新失败: {e}")
 
     window.plan_btn.clicked.connect(on_plan_clicked)
     window.refresh_btn.clicked.connect(on_refresh_clicked)

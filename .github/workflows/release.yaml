@@ -28,15 +28,15 @@ jobs:
       - name: Build with Nuitka
         run: |
           mkdir dist
-          python -m nuitka xianmetro/main.py --standalone --enable-plugin=qt --output-dir=dist --include-package=xianmetro --include-data-dir=xianmetro/assets=xianmetro/assets --nofollow-import-to=tests
+          python -m nuitka xianmetro/main.py --standalone --enable-plugin=pyqt5 --output-dir=dist --include-package=xianmetro --include-data-dir=xianmetro/assets=xianmetro/assets --nofollow-import-to=tests
 
       - name: Package artifact
         run: |
-          powershell Compress-Archive -Path dist\* -DestinationPath xianmetro.zip
+          powershell Compress-Archive -Path dist\* -DestinationPath xianmetro_nuitka.zip
 
       - name: Upload Release
         uses: softprops/action-gh-release@v2
         with:
-          files: xianmetro.zip
+          files: xianmetro_nuitka.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

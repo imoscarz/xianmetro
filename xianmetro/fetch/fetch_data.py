@@ -63,6 +63,38 @@ def load_from_file():
         save_to_file(parse_metro_info(get_metro_info()))
         return load_from_file()
 
+def get_id_list():
+    """
+    Get a list of all station IDs.
+    :return: list of station IDs
+    """
+    try:
+        metro_info = load_from_file()
+    except Exception as e:
+        metro_info = parse_metro_info(get_metro_info())
+        save_to_file(metro_info)
+    id_list = []
+    for line in metro_info:
+        for station_id in line['stations']:
+            id_list.append(station_id)
+    return id_list
+
+def get_station_list():
+    """
+    Get a list of all station names.
+    :return: list of station names
+    """
+    try:
+        metro_info = load_from_file()
+    except Exception as e:
+        metro_info = parse_metro_info(get_metro_info())
+        save_to_file(metro_info)
+    name_list = []
+    for line in metro_info:
+        for station_id in line['stations']:
+            name_list.append(line['stations'][station_id]['station_name'])
+    return name_list
+
 if __name__ == "__main__":
     metro_json = get_metro_info()
     metro_info = parse_metro_info(metro_json)

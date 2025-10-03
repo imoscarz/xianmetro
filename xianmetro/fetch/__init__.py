@@ -7,5 +7,7 @@ from .fetch_data import (
     get_metro_info,
     parse_metro_info,
     save_to_file,
-    load_from_file
+    load_from_file,
+    get_id_list,
+    get_station_list
 )

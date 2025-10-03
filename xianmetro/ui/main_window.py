@@ -18,9 +18,10 @@ class MetroPlannerUI(QWidget):
     def __init__(self):
         super().__init__()
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setWindowTitle("西安地铁路线规划")
-        self.resize(1600, 900)
-        self.setMinimumSize(1200, 700)
+        self.setWindowTitle("地铁路线规划 BY imoscarz")
+        # self.resize(1920, 1080)
+        self.setFixedSize(1920, 1080)
+        # self.setMinimumSize(1200, 700)
         self._set_background()
         self._init_ui()
 
@@ -57,9 +58,9 @@ class MetroPlannerUI(QWidget):
         left_layout.setContentsMargins(60, 48, 40, 48)
         left_layout.setSpacing(32)
 
-        title = TitleLabel("西安地铁路线规划")
+        title = TitleLabel("地铁路线规划")
         title.setFont(QFont("Microsoft YaHei", 22, QFont.Bold))
-        title.setAlignment(Qt.AlignLeft)
+        title.setAlignment(Qt.AlignCenter)
         left_layout.addWidget(title)
 
         input_layout = QVBoxLayout()

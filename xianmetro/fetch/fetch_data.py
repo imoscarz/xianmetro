@@ -8,7 +8,7 @@ def get_metro_info(city = "西安"):
     Fetch metro station information from AMAP API, and return it as a JSON object.
     :return: json object containing metro station information
     """
-    api_url = UPDATE_LINK[city]
+    api_url = UPDATE_LINK.get(city, UPDATE_LINK["西安"])
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"}
     response = requests.get(api_url,headers=headers)
     return json.loads(response.text)

@@ -5,7 +5,8 @@ from xianmetro.core import plan_route, parse_stations, id_to_name, name_to_id
 from xianmetro.fetch import get_metro_info, parse_metro_info, save_to_file
 from xianmetro.utils import calc_price
 
-from qfluentwidgets import MessageBox , InfoBarIcon
+from qfluentwidgets import MessageBox, InfoBarIcon
+
 
 def format_route_output_verbose(route, stations):
     """
@@ -41,27 +42,54 @@ def format_route_output_verbose(route, stations):
             icon_list.append("xianmetro/assets/icon_end.png")
     return output, icon_list
 
+
 def show_message(window, msg):
     # 使用 qfluentwidgets 的 MessageDialog
-    dlg = MessageBox (
+    dlg = MessageBox(
         title="提示",
         content=msg,
         parent=window
     )
     dlg.exec_()
 
-def get_price_text(distance):
+
+def get_price_text(distance, city):
     price = calc_price(int(distance + 0.5))
     price_card = calc_price(int(distance + 0.5), discount=1)
     price_student = calc_price(int(distance + 0.5), discount=2)
     price_free = calc_price(int(distance + 0.5), discount=3)
     # 票价信息
-    return (f"票价: 普通{price}元 | 地铁卡{price_card:.1f}元 | 学生卡{price_student:.1f}元 | 老年卡/爱心卡/拥军卡免费")
+    return (
+        f"票价: 普通{price}元 | 地铁卡{price_card:.1f}元 | 学生卡{price_student:.1f}元 | 老年卡/爱心卡/拥军卡免费"
+        if city == "西安" else "暂不支持当前城市的票价计算"
+    )
+
 
 def main():
     app = QApplication(sys.argv)
     window = MetroPlannerUI()
     stations = parse_stations()
+    # 设置默认城市
+    current_city = window.get_city() or "西安"
+
+    def load_city_data(city):
+        metro_json = get_metro_info(city)
+        metro_info = parse_metro_info(metro_json)
+        save_to_file(metro_info)
+        return parse_stations()
+
+    stations = load_city_data(current_city)
+
+    def refresh_station_inputs(city):
+        # 更新下拉选项
+        from xianmetro.fetch import get_id_list, get_station_list
+        station_names = get_station_list()
+        station_ids = get_id_list()
+        start_options = list(dict.fromkeys(station_names + station_ids))
+        window.start_input.clear()
+        window.end_input.clear()
+        window.start_input.addItems(start_options)
+        window.end_input.addItems(start_options)
 
     def update_routes():
         """
@@ -77,7 +105,9 @@ def main():
         start_input = window.get_start_station().strip()
         end_input = window.get_end_station().strip()
         if start_input == "imoscarz":
-            show_message(window, "You Found The Easter egg\n欢迎使用西安地铁线路规划器！\n作者: imoscarz\nGitHub:https://github.com/imoscarz/xianmetro")
+            show_message(window,
+                         "You Found The Easter egg\n欢迎使用西安地铁线路规划器！\n"
+                         "作者: imoscarz\nGitHub:https://github.com/imoscarz/xianmetro")
             return
         if end_input == "imoscarz":
             show_message(window, "You Found The Easter egg\n缪尔塞斯真的很可爱！！！！！")
@@ -117,7 +147,7 @@ def main():
                     f"总站点数: {result['total_stops']}\n"
                     f"总距离: {result['total_distance']} km\n"
                     f"换乘次数: {result['transfers']}\n"
-                    f"{get_price_text(result['total_distance'])}"
+                    f"{get_price_text(result['total_distance'], window.get_city())}"
                 )
                 window.clear_result_area(idx)
                 for item, icon in zip(route_lines, icon_list):
@@ -135,25 +165,29 @@ def main():
         update_routes()
 
     def on_refresh_clicked():
-        """
-        刷新地铁数据
-        """
+        nonlocal stations
+        city = window.get_city() or "西安"
         try:
-            metro_json = get_metro_info()
-            metro_info = parse_metro_info(metro_json)
-            save_to_file(metro_info)
-            nonlocal stations
-            stations = parse_stations()
-            show_message(window, "地铁数据已刷新成功！")
-            # update_routes()
+            stations = load_city_data(city)
+            refresh_station_inputs(city)
+            show_message(window, f"{city}地铁数据已刷新成功！")
         except Exception as e:
-            show_message(window, f"地铁数据刷新失败: {e}")
+            show_message(window, f"{city}地铁数据刷新失败: {e}")
+
+    def on_city_changed():
+        nonlocal stations
+        city = window.get_city() or "西安"
+        stations = load_city_data(city)
+        refresh_station_inputs(city)
+        show_message(window, f"已切换至{city}，地铁数据已更新！")
 
     window.plan_btn.clicked.connect(on_plan_clicked)
     window.refresh_btn.clicked.connect(on_refresh_clicked)
+    window.city_input.currentTextChanged.connect(on_city_changed)
 
     window.show()
     sys.exit(app.exec_())
+
 
 if __name__ == "__main__":
     main()

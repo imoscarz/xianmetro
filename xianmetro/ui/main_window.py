@@ -5,12 +5,14 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPalette, QBrush, QPixmap, QIcon
 
-from qfluentwidgets import TitleLabel, EditableComboBox, PrimaryPushButton, PushButton, TextEdit, SmoothScrollArea
+from qfluentwidgets import TitleLabel, EditableComboBox, PrimaryPushButton, PushButton, TextEdit, SmoothScrollArea, \
+    ComboBox
 
 from PyQt5.QtWidgets import QGraphicsBlurEffect
 
 # 新增：导入获取站名和ID的方法
 from xianmetro.fetch import get_id_list, get_station_list
+from xianmetro.assets import UPDATE_LINK
 
 class MetroPlannerUI(QWidget):
     def __init__(self):
@@ -63,11 +65,17 @@ class MetroPlannerUI(QWidget):
         input_layout = QVBoxLayout()
         input_layout.setSpacing(18)
 
+        self.city_label = QLabel("当前城市")
+        self.city_label.setFont(QFont("Microsoft YaHei", 13))
+        self.city_input = ComboBox()
+        self.city_input.setPlaceholderText("请选择城市")
+        self.city_input.setMaximumWidth(320)
+        self.city_input.setFixedHeight(50)
+        self.city_input.setFont(QFont("Microsoft YaHei", 12))
+
         self.start_label = QLabel("起点站:")
         self.start_label.setFont(QFont("Microsoft YaHei", 13))
-        # 更换为 EditableComboBox
         self.start_input = EditableComboBox()
-        # self.start_input.setEditable(True)
         self.start_input.setPlaceholderText("请输入或选择起点站名/站点ID")
         self.start_input.setMaximumWidth(320)
         self.start_input.setFixedHeight(50)
@@ -75,23 +83,25 @@ class MetroPlannerUI(QWidget):
 
         self.end_label = QLabel("终点站:")
         self.end_label.setFont(QFont("Microsoft YaHei", 13))
-        # 更换为 EditableComboBox
         self.end_input = EditableComboBox()
-        # self.end_input.setEditable(True)
         self.end_input.setPlaceholderText("请输入或选择终点站名/站点ID")
         self.end_input.setMaximumWidth(320)
         self.end_input.setFixedHeight(50)
         self.end_input.setFont(QFont("Microsoft YaHei", 12))
 
         # 填充下拉内容（站名和ID）
+        city_names = UPDATE_LINK.keys()
         station_names = get_station_list()
         station_ids = get_id_list()
         # 合并并去重
         start_options = list(dict.fromkeys(station_names + station_ids))
         end_options = start_options.copy()
+        self.city_input.addItems(city_names)
         self.start_input.addItems(start_options)
         self.end_input.addItems(end_options)
 
+        input_layout.addWidget(self.city_label)
+        input_layout.addWidget(self.city_input)
         input_layout.addWidget(self.start_label)
         input_layout.addWidget(self.start_input)
         input_layout.addWidget(self.end_label)
@@ -221,9 +231,11 @@ class MetroPlannerUI(QWidget):
             self.add_result_item(2, text, icon)
         self.result_info_labels[2].setText(info_text)
 
-    # 兼容原 getter，返回当前文本（支持手动输入和选择）
     def get_start_station(self):
         return self.start_input.currentText()
 
     def get_end_station(self):
         return self.end_input.currentText()
+
+    def get_city(self):
+        return self.city_input.currentText()

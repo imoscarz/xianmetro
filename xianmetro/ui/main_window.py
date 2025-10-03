@@ -5,15 +5,16 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPalette, QBrush, QPixmap, QIcon
 
-from qfluentwidgets import TitleLabel, LineEdit, PrimaryPushButton, PushButton, TextEdit, SmoothScrollArea
+from qfluentwidgets import TitleLabel, EditableComboBox, PrimaryPushButton, PushButton, TextEdit, SmoothScrollArea
 
-# 新增：导入 QGraphicsBlurEffect
 from PyQt5.QtWidgets import QGraphicsBlurEffect
+
+# 新增：导入获取站名和ID的方法
+from xianmetro.fetch import get_id_list, get_station_list
 
 class MetroPlannerUI(QWidget):
     def __init__(self):
         super().__init__()
-        # 高DPI自适应
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowTitle("西安地铁路线规划")
         self.resize(1600, 900)
@@ -22,25 +23,21 @@ class MetroPlannerUI(QWidget):
         self._init_ui()
 
     def _set_background(self):
-        # 设置背景图片
         palette = self.palette()
         pixmap = QPixmap("xianmetro/assets/bg.jpg")
         palette.setBrush(QPalette.Window, QBrush(pixmap))
         self.setPalette(palette)
         self.setAutoFillBackground(True)
 
-        # 新增：创建一个覆盖整个窗口的 QLabel 用于模糊背景
         self.bg_label = QLabel(self)
         self.bg_label.setPixmap(pixmap)
         self.bg_label.setGeometry(0, 0, self.width(), self.height())
-        self.bg_label.lower()  # 确保在最底层
+        self.bg_label.lower()
 
-        # 应用模糊效果
         blur_effect = QGraphicsBlurEffect()
-        blur_effect.setBlurRadius(30)  # 模糊半径可调整
+        blur_effect.setBlurRadius(10)
         self.bg_label.setGraphicsEffect(blur_effect)
 
-        # 保证窗口大小变化时背景也自适应
         self.bg_label.setScaledContents(True)
         self.resizeEvent = self._resize_event_with_bg
 
@@ -49,54 +46,59 @@ class MetroPlannerUI(QWidget):
         event.accept()
 
     def _init_ui(self):
-        # Parallel Layout: 左侧输入区，右侧结果区
         main_layout = QHBoxLayout(self)
         main_layout.setSpacing(0)
         main_layout.setContentsMargins(0, 0, 0, 0)
 
-        # 左侧：标题、输入框、按钮
         left_widget = QWidget()
         left_layout = QVBoxLayout(left_widget)
         left_layout.setContentsMargins(60, 48, 40, 48)
         left_layout.setSpacing(32)
 
-        # 标题（字号减小）
         title = TitleLabel("西安地铁路线规划")
         title.setFont(QFont("Microsoft YaHei", 22, QFont.Bold))
         title.setAlignment(Qt.AlignLeft)
         left_layout.addWidget(title)
 
-        # 输入区
         input_layout = QVBoxLayout()
         input_layout.setSpacing(18)
 
         self.start_label = QLabel("起点站:")
         self.start_label.setFont(QFont("Microsoft YaHei", 13))
-        self.start_input = LineEdit()
-        self.start_input.setPlaceholderText("请输入起点站名或站点ID")
+        # 更换为 EditableComboBox
+        self.start_input = EditableComboBox()
+        # self.start_input.setEditable(True)
+        self.start_input.setPlaceholderText("请输入或选择起点站名/站点ID")
         self.start_input.setMaximumWidth(320)
         self.start_input.setFixedHeight(50)
         self.start_input.setFont(QFont("Microsoft YaHei", 12))
 
         self.end_label = QLabel("终点站:")
         self.end_label.setFont(QFont("Microsoft YaHei", 13))
-        self.end_input = LineEdit()
-        self.end_input.setPlaceholderText("请输入终点站名或站点ID")
+        # 更换为 EditableComboBox
+        self.end_input = EditableComboBox()
+        # self.end_input.setEditable(True)
+        self.end_input.setPlaceholderText("请输入或选择终点站名/站点ID")
         self.end_input.setMaximumWidth(320)
         self.end_input.setFixedHeight(50)
         self.end_input.setFont(QFont("Microsoft YaHei", 12))
+
+        # 填充下拉内容（站名和ID）
+        station_names = get_station_list()
+        station_ids = get_id_list()
+        # 合并并去重
+        start_options = list(dict.fromkeys(station_names + station_ids))
+        end_options = start_options.copy()
+        self.start_input.addItems(start_options)
+        self.end_input.addItems(end_options)
 
         input_layout.addWidget(self.start_label)
         input_layout.addWidget(self.start_input)
         input_layout.addWidget(self.end_label)
         input_layout.addWidget(self.end_input)
-
-        # --- 新增中心对齐 ---
         input_layout.setAlignment(Qt.AlignHCenter | Qt.AlignVCenter)
-
         left_layout.addLayout(input_layout)
 
-        # 按钮区域（水平布局，包含“开始规划”和“刷新路线”按钮）
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(18)
         btn_layout.setAlignment(Qt.AlignCenter)
@@ -113,25 +115,21 @@ class MetroPlannerUI(QWidget):
 
         btn_layout.addWidget(self.plan_btn)
         btn_layout.addWidget(self.refresh_btn)
-
         left_layout.addLayout(btn_layout)
 
-        # 左侧占据约30%
         left_layout.addStretch()
         left_widget.setFixedWidth(int(self.width() * 0.37))
         main_layout.addWidget(left_widget, 30)
 
-        # 右侧：三种方案列
         right_widget = QWidget()
         right_layout = QHBoxLayout(right_widget)
         right_layout.setContentsMargins(0, 48, 40, 48)
         right_layout.setSpacing(22)
 
-        # 新增：存储滚动区和布局
         self.result_areas = []
         self.result_info_labels = []
-        self.result_scrolls = []  # 替换原 result_lists
-        self.result_vlayouts = []  # 竖直布局
+        self.result_scrolls = []
+        self.result_vlayouts = []
 
         for title_text in ["最少换乘方案", "最少站点方案", "最短距离方案"]:
             area_widget = QWidget()
@@ -152,12 +150,10 @@ class MetroPlannerUI(QWidget):
             area_layout.addWidget(info_label)
             self.result_info_labels.append(info_label)
 
-            # 修改为 SmoothScrollArea
             scroll_area = SmoothScrollArea()
             scroll_area.setWidgetResizable(True)
             scroll_area.setStyleSheet("background: #f4f7fa; border-radius: 10px; border:1px solid #dbeaf5;")
             scroll_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-            # 内容区
             scroll_content = QWidget()
             vlayout = QVBoxLayout(scroll_content)
             vlayout.setSpacing(8)
@@ -184,7 +180,7 @@ class MetroPlannerUI(QWidget):
     def add_result_item(self, idx, text, icon=None):
         btn = PushButton(text)
         btn.setFont(QFont("Microsoft YaHei", 17))
-        btn.setEnabled(False)  # 禁用点击
+        btn.setEnabled(False)
         btn.setStyleSheet("""
                 QPushButton {
                     background-color: #f3f8fb;
@@ -204,7 +200,6 @@ class MetroPlannerUI(QWidget):
             btn.setIconSize(btn.sizeHint())
         self.result_vlayouts[idx].addWidget(btn)
 
-    # 接口兼容原 ListWidget 批量添加
     def set_least_transfer_result(self, lines: list, info_text: str = "", icon_list=None):
         self.clear_result_area(0)
         icon_list = icon_list or [None] * len(lines)
@@ -226,9 +221,9 @@ class MetroPlannerUI(QWidget):
             self.add_result_item(2, text, icon)
         self.result_info_labels[2].setText(info_text)
 
-    # 兼容原 getter
+    # 兼容原 getter，返回当前文本（支持手动输入和选择）
     def get_start_station(self):
-        return self.start_input.text()
+        return self.start_input.currentText()
 
     def get_end_station(self):
-        return self.end_input.text()
+        return self.end_input.currentText()

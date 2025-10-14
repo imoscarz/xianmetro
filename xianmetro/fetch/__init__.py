@@ -9,5 +9,6 @@ from .fetch_data import (
     save_to_file,
     load_from_file,
     get_id_list,
-    get_station_list
+    get_station_list,
+    get_line_color,
 )

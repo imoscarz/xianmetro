@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from xianmetro.ui.main_window import MetroPlannerUI
 from xianmetro.core import plan_route, parse_stations, id_to_name, name_to_id
-from xianmetro.fetch import get_metro_info, parse_metro_info, save_to_file
+from xianmetro.fetch import get_metro_info, parse_metro_info, save_to_file, get_line_color
 from xianmetro.utils import calc_price
 from xianmetro.assets import *
 
@@ -11,10 +11,11 @@ from qfluentwidgets import MessageBox, InfoBarIcon
 
 def format_route_output_verbose(route, stations):
     """
-    格式化路线输出：每行为一个站点，包含上车、换乘和下车提示
+    格式化路线输出：每行为一个站点，包含上车、换乘和下车提示，icon统一用assets中的FluentIcon
     """
     output = []
     icon_list = []
+    color_list = []
     for i, segment in enumerate(route):
         line = segment["line"]
         station_ids = segment["stations"]
@@ -23,26 +24,29 @@ def format_route_output_verbose(route, stations):
         if i == 0 and n > 0:
             start_station = id_to_name(stations, station_ids[0])
             output.append(f"在【{start_station}】乘坐【{line}】")
-            icon_list.append("xianmetro/assets/up.png")
+            icon_list.append(UP)
+            color_list.append(get_line_color(line))
         for j, sid in enumerate(station_ids):
             station_name = id_to_name(stations, sid)
             if i == 0 and j == 0:
                 continue
             output.append(f"{station_name}")
-            # 普通站点
-            icon_list.append("xianmetro/assets/icon_station.png")
+            icon_list.append(INFO)
+            color_list.append(get_line_color(line))
             # 换乘提示
             if j == n - 1 and i < len(route) - 1:
                 next_line = route[i + 1]["line"]
                 output.append(f"在【{station_name}】由【{line}】换乘【{next_line}】")
-                icon_list.append("xianmetro/assets/icon_transfer.png")
+                color_list.append("#FFFFFF")
+                icon_list.append(TRANSFER)
         # 终点提示
         if i == len(route) - 1 and n > 0:
             end_station = id_to_name(stations, station_ids[-1])
             output.append(f"在【{end_station}】下车")
-            icon_list.append("xianmetro/assets/icon_end.png")
-    return output, icon_list
-
+            icon_list.append(DOWN)
+            # print(get_line_color(end_station))
+            color_list.append(get_line_color(line))
+    return output, icon_list, color_list
 
 def show_message(window, msg):
     # 使用 qfluentwidgets 的 MessageDialog
@@ -85,7 +89,7 @@ def main():
         # 更新下拉选项
         from xianmetro.fetch import get_id_list, get_station_list
         station_names = get_station_list()
-        station_ids = get_id_list()
+        station_ids = []#get_id_list()
         start_options = list(dict.fromkeys(station_names + station_ids))
         window.start_input.clear()
         window.end_input.clear()
@@ -143,7 +147,7 @@ def main():
         # 输出各方案
         for idx, result in enumerate(results):
             if result:
-                route_lines, icon_list = format_route_output_verbose(result["route"], stations)
+                route_lines, icon_list, color_list = format_route_output_verbose(result["route"], stations)
                 info_text = (
                     f"总站点数: {result['total_stops']}\n"
                     f"总距离: {result['total_distance']} km\n"
@@ -151,8 +155,8 @@ def main():
                     f"{get_price_text(result['total_distance'], window.get_city())}"
                 )
                 window.clear_result_area(idx)
-                for item, icon in zip(route_lines, icon_list):
-                    window.add_result_item(idx, item, icon)
+                for item, icon, color in zip(route_lines, icon_list, color_list):
+                    window.add_result_item(idx, item, icon, color)
                 window.result_info_labels[idx].setText(info_text)
             else:
                 window.clear_result_area(idx)

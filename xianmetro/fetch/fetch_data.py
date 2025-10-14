@@ -40,6 +40,7 @@ def parse_metro_info(metro_json):
         _metro_info.append({
             'line_name': line_name,
             'is_loop': is_loop,
+            'color': color,
             'stations': stations
         })
     return _metro_info
@@ -97,7 +98,7 @@ def get_station_list():
             name_list.append(line['stations'][station_id]['station_name'])
     return name_list
 
-def get_station_color(line_name):
+def get_line_color(line_name):
     """
     Get the color of a metro line.
     :param line_name: name of the metro line
@@ -110,7 +111,7 @@ def get_station_color(line_name):
         save_to_file(metro_info)
     for line in metro_info:
         if line['line_name'] == line_name:
-            return line['color']
+            return f"#{line['color']}"
     return "#000000"  # default color
 
 if __name__ == "__main__":

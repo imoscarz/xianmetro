@@ -10,9 +10,12 @@ from qfluentwidgets import TitleLabel, EditableComboBox, PrimaryPushButton, Push
 
 from PyQt5.QtWidgets import QGraphicsBlurEffect
 
-# 新增：导入获取站名和ID的方法
+from qfluentwidgets import CardWidget
+
 from xianmetro.fetch import get_id_list, get_station_list
 from xianmetro.assets import UPDATE_LINK
+
+
 
 class MetroPlannerUI(QWidget):
     def __init__(self):
@@ -188,49 +191,69 @@ class MetroPlannerUI(QWidget):
             if widget is not None:
                 widget.deleteLater()
 
-    def add_result_item(self, idx, text, icon=None):
-        btn = PushButton(text)
-        btn.setFont(QFont("Microsoft YaHei", 17))
-        btn.setEnabled(False)
-        btn.setStyleSheet("""
-                QPushButton {
-                    background-color: #f3f8fb;
-                    border-radius: 8px;
-                    margin-bottom: 2px;
-                    padding: 10px 18px;
-                    font-size: 19px;
-                    color: #333;
-                    border: 1px solid #c8e0f0;
-                }
-                QPushButton:disabled {
-                    color: #666;
-                }
-            """)
+    def add_result_item(self, idx, text, icon=None, color = '#FFFFFF'):
+        card = CardWidget(self)
+        card_layout = QHBoxLayout(card)
+        card_layout.setContentsMargins(16, 8, 16, 8)
+        card_layout.setSpacing(18)
+        # 左侧icon
+        icon_label = QLabel()
+        icon_label.setFixedSize(40, 40)
         if icon:
-            btn.setIcon(icon)
-            btn.setIconSize(btn.sizeHint())
-            # btn.setIconSize(QSize(16, 16))
-        self.result_vlayouts[idx].addWidget(btn)
+            # 支持assets路径（png）和 FluentIcon
+            if isinstance(icon, str) and icon.endswith('.png'):
+                pixmap = QPixmap(icon)
+                icon_label.setPixmap(pixmap.scaled(32, 32, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            else:
+                # 尝试用FluentIcon
+                try:
+                    icon_label.setPixmap(QPixmap(QIcon.fromTheme(icon).pixmap(QSize(32, 32))))
+                except Exception:
+                    icon_label.setText("🛈")
+        else:
+            icon_label.setText("🛈")
+        # 右侧文本
+        text_label = QLabel(text)
+        text_label.setFont(QFont("Microsoft YaHei", 13))
+        # print(color)
+        text_label.setStyleSheet(f"""
+            background-color: {color};
+            border-radius: 8px;
+            padding: 10px 18px;
+            color: #333;
+        """)
+        text_label.setWordWrap(True)
+        # 加入布局
+        card_layout.addWidget(icon_label)
+        card_layout.addWidget(text_label)
+        card_layout.addStretch()
+        # 添加到结果区
+        self.result_vlayouts[idx].addWidget(card)
 
-    def set_least_transfer_result(self, lines: list, info_text: str = "", icon_list=None):
+    def set_least_transfer_result(self, lines: list, info_text: str = "", icon_list=None, color_list=None):
         self.clear_result_area(0)
         icon_list = icon_list or [None] * len(lines)
-        for text, icon in zip(lines, icon_list):
-            self.add_result_item(0, text, icon)
+        # print(color_list)
+        color_list = color_list or ['#FFFFFF'] * len(lines)
+        # print(color_list)
+        for text, icon, color in zip(lines, icon_list, color_list):
+            self.add_result_item(0, text, icon, color)
         self.result_info_labels[0].setText(info_text)
 
-    def set_least_stops_result(self, lines: list, info_text: str = "", icon_list=None):
+    def set_least_stops_result(self, lines: list, info_text: str = "", icon_list=None, color_list=None):
         self.clear_result_area(1)
         icon_list = icon_list or [None] * len(lines)
-        for text, icon in zip(lines, icon_list):
-            self.add_result_item(1, text, icon)
+        color_list = color_list or ['#FFFFFF'] * len(lines)
+        for text, icon, color in zip(lines, icon_list, color_list):
+            self.add_result_item(1, text, icon, color)
         self.result_info_labels[1].setText(info_text)
 
-    def set_shortest_distance_result(self, lines: list, info_text: str = "", icon_list=None):
+    def set_shortest_distance_result(self, lines: list, info_text: str = "", icon_list=None, color_list=None):
         self.clear_result_area(2)
         icon_list = icon_list or [None] * len(lines)
-        for text, icon in zip(lines, icon_list):
-            self.add_result_item(2, text, icon)
+        color_list = color_list or ['#FFFFFF'] * len(lines)
+        for text, icon, color in zip(lines, icon_list, color_list):
+            self.add_result_item(2, text, icon, color)
         self.result_info_labels[2].setText(info_text)
 
     def get_start_station(self):

@@ -212,6 +212,7 @@ class MetroPlannerUI(QWidget):
                     icon_label.setText("🛈")
         else:
             icon_label.setText("🛈")
+        icon_label.setAlignment(Qt.AlignCenter)
         # 右侧文本
         text_label = QLabel(text)
         text_label.setFont(QFont("Microsoft YaHei", 13))
@@ -220,7 +221,7 @@ class MetroPlannerUI(QWidget):
             background-color: {color};
             border-radius: 8px;
             padding: 10px 18px;
-            color: #333;
+            color: {"#333" if color == '#FFFFFF' else '#FFFFFF'};
         """)
         text_label.setWordWrap(True)
         # 加入布局

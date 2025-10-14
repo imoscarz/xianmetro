@@ -71,6 +71,7 @@ def get_price_text(distance, city):
 
 
 def main():
+    save_to_file(parse_metro_info(get_metro_info("西安")))
     app = QApplication(sys.argv)
     window = MetroPlannerUI()
     stations = parse_stations()

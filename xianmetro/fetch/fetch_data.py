@@ -24,6 +24,7 @@ def parse_metro_info(metro_json):
     for line in lines:
         line_name = line['ln']
         is_loop = line['lo']
+        color = line['cl']
         stations = {}
         for station in line['st']:
             station_sl = station['sl'].split(',')
@@ -95,6 +96,22 @@ def get_station_list():
         for station_id in line['stations']:
             name_list.append(line['stations'][station_id]['station_name'])
     return name_list
+
+def get_station_color(line_name):
+    """
+    Get the color of a metro line.
+    :param line_name: name of the metro line
+    :return: color of the metro line
+    """
+    try:
+        metro_info = load_from_file()
+    except Exception as e:
+        metro_info = parse_metro_info(get_metro_info())
+        save_to_file(metro_info)
+    for line in metro_info:
+        if line['line_name'] == line_name:
+            return line['color']
+    return "#000000"  # default color
 
 if __name__ == "__main__":
     metro_json = get_metro_info()

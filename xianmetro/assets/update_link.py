@@ -6,5 +6,6 @@ UPDATE_LINK = {
     "南京":"https://map.amap.com/service/subway?_1759469040488&srhdata=3201_drw_nanjing.json",
     "广州":"https://map.amap.com/service/subway?_1759469066859&srhdata=4401_drw_guangzhou.json",
     "深圳":"https://map.amap.com/service/subway?_1759469104402&srhdata=4403_drw_shenzhen.json",
-    "上海":"https://map.amap.com/service/subway?_1759469136623&srhdata=3100_drw_shanghai.json"
+    "上海":"https://map.amap.com/service/subway?_1759469136623&srhdata=3100_drw_shanghai.json",
+    "郑州":"https://map.amap.com/service/subway?_1760407957516&srhdata=4101_drw_zhengzhou.json"
 }

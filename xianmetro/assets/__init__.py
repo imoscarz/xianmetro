@@ -4,3 +4,4 @@ __author__ = "imoscarz"
 __description__ = "Assets for the Xi'an Metro Route Planner application."
 
 from .update_link import UPDATE_LINK
+from .icon import *

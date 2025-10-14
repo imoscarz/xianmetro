@@ -4,6 +4,7 @@ from xianmetro.ui.main_window import MetroPlannerUI
 from xianmetro.core import plan_route, parse_stations, id_to_name, name_to_id
 from xianmetro.fetch import get_metro_info, parse_metro_info, save_to_file
 from xianmetro.utils import calc_price
+from xianmetro.assets import *
 
 from qfluentwidgets import MessageBox, InfoBarIcon
 
@@ -22,7 +23,7 @@ def format_route_output_verbose(route, stations):
         if i == 0 and n > 0:
             start_station = id_to_name(stations, station_ids[0])
             output.append(f"在【{start_station}】乘坐【{line}】")
-            icon_list.append("xianmetro/assets/icon_start.png")
+            icon_list.append("xianmetro/assets/up.png")
         for j, sid in enumerate(station_ids):
             station_name = id_to_name(stations, sid)
             if i == 0 and j == 0:

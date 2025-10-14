@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QSizePolicy, QSpacerItem,
     QFrame
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont, QPalette, QBrush, QPixmap, QIcon
 
 from qfluentwidgets import TitleLabel, EditableComboBox, PrimaryPushButton, PushButton, TextEdit, SmoothScrollArea, \
@@ -207,8 +207,9 @@ class MetroPlannerUI(QWidget):
                 }
             """)
         if icon:
-            btn.setIcon(QIcon(icon))
+            btn.setIcon(icon)
             btn.setIconSize(btn.sizeHint())
+            # btn.setIconSize(QSize(16, 16))
         self.result_vlayouts[idx].addWidget(btn)
 
     def set_least_transfer_result(self, lines: list, info_text: str = "", icon_list=None):

@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont, QPalette, QBrush, QPixmap, QIcon
 
 from qfluentwidgets import TitleLabel, EditableComboBox, PrimaryPushButton, PushButton, TextEdit, SmoothScrollArea, \
-    ComboBox
+    ComboBox, SegmentedWidget
 
 from PyQt5.QtWidgets import QGraphicsBlurEffect
 
@@ -14,6 +14,7 @@ from qfluentwidgets import CardWidget
 
 from xianmetro.fetch import get_id_list, get_station_list
 from xianmetro.assets import UPDATE_LINK
+from xianmetro.ui.map_widget import MapWidget
 
 
 
@@ -136,62 +137,81 @@ class MetroPlannerUI(QWidget):
         main_layout.addWidget(left_widget, 30)
 
         right_widget = QWidget()
-        right_layout = QHBoxLayout(right_widget)
+        right_layout = QVBoxLayout(right_widget)
         right_layout.setContentsMargins(0, 48, 40, 48)
         right_layout.setSpacing(22)
 
-        self.result_areas = []
-        self.result_info_labels = []
-        self.result_scrolls = []
-        self.result_vlayouts = []
+        # Add SegmentedWidget for route selection
+        self.route_selector = SegmentedWidget()
+        self.route_selector.addItem("最少换乘", "transfer")
+        self.route_selector.addItem("最少站点", "stops")
+        self.route_selector.addItem("最短距离", "distance")
+        self.route_selector.setCurrentItem("最少换乘")
+        right_layout.addWidget(self.route_selector)
 
-        for title_text in ["最少换乘方案", "最少站点方案", "最短距离方案"]:
-            area_widget = QWidget()
-            area_layout = QVBoxLayout(area_widget)
-            area_layout.setContentsMargins(0, 0, 0, 0)
-            area_layout.setSpacing(10)
+        # Create horizontal layout for result and map
+        content_layout = QHBoxLayout()
+        content_layout.setSpacing(22)
 
-            info_label = TextEdit()
-            info_label.setFont(QFont("Microsoft YaHei", 11))
-            info_label.setReadOnly(True)
-            info_label.setMaximumHeight(150)
-            info_label.setMinimumHeight(32)
-            info_label.setStyleSheet("background: #f7fafd; border:none; color:#444; border-radius: 10px;")
-            scheme_label = QLabel(title_text)
-            scheme_label.setFont(QFont("Microsoft YaHei", 13, QFont.Bold))
-            scheme_label.setStyleSheet("color: #0078d7; margin-bottom: 2px;")
-            area_layout.addWidget(scheme_label)
-            area_layout.addWidget(info_label)
-            self.result_info_labels.append(info_label)
+        # Result display area
+        result_container = QWidget()
+        result_layout = QVBoxLayout(result_container)
+        result_layout.setContentsMargins(0, 0, 0, 0)
+        result_layout.setSpacing(10)
 
-            scroll_area = SmoothScrollArea()
-            scroll_area.setWidgetResizable(True)
-            scroll_area.setStyleSheet("background: #f4f7fa; border-radius: 10px; border:1px solid #dbeaf5;")
-            scroll_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-            scroll_content = QWidget()
-            vlayout = QVBoxLayout(scroll_content)
-            vlayout.setSpacing(8)
-            vlayout.setContentsMargins(10, 10, 10, 10)
-            scroll_area.setWidget(scroll_content)
-            area_layout.addWidget(scroll_area, stretch=1)
+        self.info_label = TextEdit()
+        self.info_label.setFont(QFont("Microsoft YaHei", 11))
+        self.info_label.setReadOnly(True)
+        self.info_label.setMaximumHeight(150)
+        self.info_label.setMinimumHeight(32)
+        self.info_label.setStyleSheet("background: #f7fafd; border:none; color:#444; border-radius: 10px;")
+        result_layout.addWidget(self.info_label)
 
-            self.result_scrolls.append(scroll_area)
-            self.result_vlayouts.append(vlayout)
-            self.result_areas.append(area_widget)
-            right_layout.addWidget(area_widget, 1)
+        scroll_area = SmoothScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setStyleSheet("background: #f4f7fa; border-radius: 10px; border:1px solid #dbeaf5;")
+        scroll_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        scroll_content = QWidget()
+        self.result_vlayout = QVBoxLayout(scroll_content)
+        self.result_vlayout.setSpacing(8)
+        self.result_vlayout.setContentsMargins(10, 10, 10, 10)
+        scroll_area.setWidget(scroll_content)
+        result_layout.addWidget(scroll_area, stretch=1)
+
+        content_layout.addWidget(result_container, 1)
+
+        # Map widget
+        self.map_widget = MapWidget()
+        self.map_widget.setMinimumWidth(400)
+        content_layout.addWidget(self.map_widget, 1)
+
+        right_layout.addLayout(content_layout, 1)
 
         main_layout.addWidget(right_widget, 70)
+        
+        # Store route results for switching between tabs
+        self.route_results = [None, None, None]  # For three strategies
 
     # 新增清空与添加方法
-    def clear_result_area(self, idx):
-        layout = self.result_vlayouts[idx]
+    def clear_result_area(self, idx=None):
+        """Clear result area. If idx is None, clear current display."""
+        # idx parameter is kept for backward compatibility but ignored
+        layout = self.result_vlayout
         while layout.count():
             item = layout.takeAt(0)
             widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
 
-    def add_result_item(self, idx, text, icon=None, color = '#FFFFFF'):
+    def add_result_item(self, text, icon=None, color='#FFFFFF'):
+        """
+        Add result item to the current display area.
+        
+        Args:
+            text: Text to display in the result item
+            icon: Icon to display (PNG path or FluentIcon)
+            color: Background color for the text label
+        """
         card = CardWidget(self)
         card_layout = QHBoxLayout(card)
         card_layout.setContentsMargins(16, 8, 16, 8)
@@ -229,33 +249,62 @@ class MetroPlannerUI(QWidget):
         card_layout.addWidget(text_label)
         card_layout.addStretch()
         # 添加到结果区
-        self.result_vlayouts[idx].addWidget(card)
-
-    def set_least_transfer_result(self, lines: list, info_text: str = "", icon_list=None, color_list=None):
-        self.clear_result_area(0)
-        icon_list = icon_list or [None] * len(lines)
-        # print(color_list)
-        color_list = color_list or ['#FFFFFF'] * len(lines)
-        # print(color_list)
-        for text, icon, color in zip(lines, icon_list, color_list):
-            self.add_result_item(0, text, icon, color)
-        self.result_info_labels[0].setText(info_text)
-
-    def set_least_stops_result(self, lines: list, info_text: str = "", icon_list=None, color_list=None):
-        self.clear_result_area(1)
-        icon_list = icon_list or [None] * len(lines)
-        color_list = color_list or ['#FFFFFF'] * len(lines)
-        for text, icon, color in zip(lines, icon_list, color_list):
-            self.add_result_item(1, text, icon, color)
-        self.result_info_labels[1].setText(info_text)
-
-    def set_shortest_distance_result(self, lines: list, info_text: str = "", icon_list=None, color_list=None):
-        self.clear_result_area(2)
-        icon_list = icon_list or [None] * len(lines)
-        color_list = color_list or ['#FFFFFF'] * len(lines)
-        for text, icon, color in zip(lines, icon_list, color_list):
-            self.add_result_item(2, text, icon, color)
-        self.result_info_labels[2].setText(info_text)
+        self.result_vlayout.addWidget(card)
+            
+    def update_map_display(self):
+        """Update map display based on current selection"""
+        current_tab = self.route_selector.currentItem().routeKey()
+        idx_map = {"transfer": 0, "stops": 1, "distance": 2}
+        idx = idx_map.get(current_tab, 0)
+        
+        result = self.route_results[idx]
+        if result and result.get("route_data"):
+            route = result["route_data"]
+            stations = result["stations_dict"]
+            line_colors = result["line_colors"]
+            self.map_widget.set_route(route, stations, line_colors)
+        else:
+            self.map_widget.clear_route()
+    
+    def on_route_selector_changed(self):
+        """Handle route selector tab change"""
+        current_tab = self.route_selector.currentItem().routeKey()
+        idx_map = {"transfer": 0, "stops": 1, "distance": 2}
+        idx = idx_map.get(current_tab, 0)
+        
+        # Clear and display selected route result
+        self.clear_result_area()
+        result = self.route_results[idx]
+        
+        if result:
+            # Display route lines
+            if result.get("route_lines"):
+                for item, icon, color in zip(result["route_lines"], result["icon_list"], result["color_list"]):
+                    self.add_result_item(item, icon, color)
+            else:
+                self.add_result_item(result.get("message", "未找到方案"))
+                
+            # Update info label
+            self.info_label.setText(result.get("info_text", ""))
+        else:
+            self.info_label.setText("")
+            
+        # Update map
+        self.update_map_display()
+    
+    def store_route_result(self, idx, route_lines=None, icon_list=None, color_list=None, 
+                          info_text="", route_data=None, stations_dict=None, line_colors=None, message=None):
+        """Store route result for later display when switching tabs"""
+        self.route_results[idx] = {
+            "route_lines": route_lines,
+            "icon_list": icon_list,
+            "color_list": color_list,
+            "info_text": info_text,
+            "route_data": route_data,
+            "stations_dict": stations_dict,
+            "line_colors": line_colors,
+            "message": message
+        }
 
     def get_start_station(self):
         return self.start_input.currentText()

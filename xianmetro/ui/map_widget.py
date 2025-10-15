@@ -20,7 +20,6 @@ class MapWidget(QWidget):
         self.pan_offset_x = 0.0  # Pan offset in x direction
         self.pan_offset_y = 0.0  # Pan offset in y direction
         self.last_mouse_pos = None  # For tracking mouse drag
-        self.setMouseTracking(False)  # Only track when dragging
         
         # Load icons once during initialization with error handling
         try:
@@ -89,7 +88,7 @@ class MapWidget(QWidget):
     
     def mouseMoveEvent(self, event):
         """Handle mouse move for panning"""
-        if event.buttons() & Qt.LeftButton and self.last_mouse_pos:
+        if event.buttons() & Qt.LeftButton and self.last_mouse_pos is not None:
             delta = event.pos() - self.last_mouse_pos
             self.pan_offset_x += delta.x()
             self.pan_offset_y += delta.y()
@@ -183,6 +182,12 @@ class MapWidget(QWidget):
                     transfer_station = self.route_data[i]["stations"][-1]
                     transfer_stations.append((i, transfer_station))
         
+        def is_special_station(station_id):
+            """Check if a station is special (boarding, alighting, or transfer)"""
+            return (station_id == boarding_station or 
+                    station_id == alighting_station or
+                    any(station_id == ts_id for _, ts_id in transfer_stations))
+        
         # Draw route segments
         for i, segment in enumerate(self.route_data):
             line_name = segment["line"]
@@ -243,7 +248,7 @@ class MapWidget(QWidget):
                     is_transfer = any(station_id == ts_id for _, ts_id in transfer_stations)
                     
                     # Draw station circle only for non-special stations
-                    if not (is_boarding or is_alighting or is_transfer):
+                    if not is_special_station(station_id):
                         painter.setBrush(QBrush(QColor(color)))
                         painter.setPen(QPen(QColor("#ffffff"), 2))
                         painter.drawEllipse(point, 6, 6)

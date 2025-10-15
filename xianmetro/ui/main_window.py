@@ -195,10 +195,8 @@ class MetroPlannerUI(QWidget):
     # 新增清空与添加方法
     def clear_result_area(self, idx=None):
         """Clear result area. If idx is None, clear current display."""
-        if idx is None:
-            layout = self.result_vlayout
-        else:
-            layout = self.result_vlayouts[idx] if idx < len(self.result_vlayouts) else self.result_vlayout
+        # idx parameter is kept for backward compatibility but ignored
+        layout = self.result_vlayout
         while layout.count():
             item = layout.takeAt(0)
             widget = item.widget()
@@ -206,7 +204,7 @@ class MetroPlannerUI(QWidget):
                 widget.deleteLater()
 
     def add_result_item(self, idx, text, icon=None, color = '#FFFFFF'):
-        """Add result item. If idx is None, add to current display."""
+        """Add result item. If idx is not None, it's ignored (kept for backward compatibility)."""
         card = CardWidget(self)
         card_layout = QHBoxLayout(card)
         card_layout.setContentsMargins(16, 8, 16, 8)
@@ -244,11 +242,7 @@ class MetroPlannerUI(QWidget):
         card_layout.addWidget(text_label)
         card_layout.addStretch()
         # 添加到结果区
-        if idx is None:
-            self.result_vlayout.addWidget(card)
-        else:
-            layout = self.result_vlayouts[idx] if idx < len(self.result_vlayouts) else self.result_vlayout
-            layout.addWidget(card)
+        self.result_vlayout.addWidget(card)
             
     def update_map_display(self):
         """Update map display based on current selection"""
@@ -304,32 +298,6 @@ class MetroPlannerUI(QWidget):
             "line_colors": line_colors,
             "message": message
         }
-
-    def set_least_transfer_result(self, lines: list, info_text: str = "", icon_list=None, color_list=None):
-        self.clear_result_area(0)
-        icon_list = icon_list or [None] * len(lines)
-        # print(color_list)
-        color_list = color_list or ['#FFFFFF'] * len(lines)
-        # print(color_list)
-        for text, icon, color in zip(lines, icon_list, color_list):
-            self.add_result_item(0, text, icon, color)
-        self.result_info_labels[0].setText(info_text)
-
-    def set_least_stops_result(self, lines: list, info_text: str = "", icon_list=None, color_list=None):
-        self.clear_result_area(1)
-        icon_list = icon_list or [None] * len(lines)
-        color_list = color_list or ['#FFFFFF'] * len(lines)
-        for text, icon, color in zip(lines, icon_list, color_list):
-            self.add_result_item(1, text, icon, color)
-        self.result_info_labels[1].setText(info_text)
-
-    def set_shortest_distance_result(self, lines: list, info_text: str = "", icon_list=None, color_list=None):
-        self.clear_result_area(2)
-        icon_list = icon_list or [None] * len(lines)
-        color_list = color_list or ['#FFFFFF'] * len(lines)
-        for text, icon, color in zip(lines, icon_list, color_list):
-            self.add_result_item(2, text, icon, color)
-        self.result_info_labels[2].setText(info_text)
 
     def get_start_station(self):
         return self.start_input.currentText()

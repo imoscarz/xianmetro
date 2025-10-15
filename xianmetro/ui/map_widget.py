@@ -256,13 +256,13 @@ class MapWidget(QWidget):
                     # Draw icon for special stations
                     icon_size = 24  # Keep icon size constant
                     if is_boarding and not self.up_icon.isNull():
-                        icon_rect = QRectF(point.x() - icon_size/2, point.y() - icon_size - 10, icon_size, icon_size)
+                        icon_rect = QRectF(point.x() - icon_size/2, point.y() - icon_size*1/2 , icon_size, icon_size)
                         painter.drawPixmap(icon_rect.toRect(), self.up_icon)
                     elif is_alighting and not self.down_icon.isNull():
-                        icon_rect = QRectF(point.x() - icon_size/2, point.y() - icon_size - 10, icon_size, icon_size)
+                        icon_rect = QRectF(point.x() - icon_size/2, point.y() - icon_size*1/2 , icon_size, icon_size)
                         painter.drawPixmap(icon_rect.toRect(), self.down_icon)
                     elif is_transfer and not self.transfer_icon.isNull():
-                        icon_rect = QRectF(point.x() - icon_size/2, point.y() - icon_size - 10, icon_size, icon_size)
+                        icon_rect = QRectF(point.x() - icon_size/2, point.y() - icon_size*1/2 , icon_size, icon_size)
                         painter.drawPixmap(icon_rect.toRect(), self.transfer_icon)
                     
                     # Draw station name with constant font size

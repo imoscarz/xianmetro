@@ -18,10 +18,30 @@ class MapWidget(QWidget):
         self.stations_dict = None  # Will store all stations information
         self.scale_factor = 1.0  # Zoom scale factor
         
-        # Load icons once during initialization
-        self.up_icon = QPixmap(UP)
-        self.down_icon = QPixmap(DOWN)
-        self.transfer_icon = QPixmap(TRANSFER)
+        # Load icons once during initialization with error handling
+        try:
+            self.up_icon = QPixmap(UP)
+            if self.up_icon.isNull():
+                print(f"Warning: Failed to load UP icon from {UP}")
+        except Exception as e:
+            print(f"Warning: Error loading UP icon: {e}")
+            self.up_icon = QPixmap()
+            
+        try:
+            self.down_icon = QPixmap(DOWN)
+            if self.down_icon.isNull():
+                print(f"Warning: Failed to load DOWN icon from {DOWN}")
+        except Exception as e:
+            print(f"Warning: Error loading DOWN icon: {e}")
+            self.down_icon = QPixmap()
+            
+        try:
+            self.transfer_icon = QPixmap(TRANSFER)
+            if self.transfer_icon.isNull():
+                print(f"Warning: Failed to load TRANSFER icon from {TRANSFER}")
+        except Exception as e:
+            print(f"Warning: Error loading TRANSFER icon: {e}")
+            self.transfer_icon = QPixmap()
         
     def set_route(self, route, stations_dict, line_colors):
         """

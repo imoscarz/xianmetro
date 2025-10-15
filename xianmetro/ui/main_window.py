@@ -203,8 +203,15 @@ class MetroPlannerUI(QWidget):
             if widget is not None:
                 widget.deleteLater()
 
-    def add_result_item(self, idx, text, icon=None, color = '#FFFFFF'):
-        """Add result item. If idx is not None, it's ignored (kept for backward compatibility)."""
+    def add_result_item(self, text, icon=None, color='#FFFFFF'):
+        """
+        Add result item to the current display area.
+        
+        Args:
+            text: Text to display in the result item
+            icon: Icon to display (PNG path or FluentIcon)
+            color: Background color for the text label
+        """
         card = CardWidget(self)
         card_layout = QHBoxLayout(card)
         card_layout.setContentsMargins(16, 8, 16, 8)
@@ -273,9 +280,9 @@ class MetroPlannerUI(QWidget):
             # Display route lines
             if result.get("route_lines"):
                 for item, icon, color in zip(result["route_lines"], result["icon_list"], result["color_list"]):
-                    self.add_result_item(None, item, icon, color)
+                    self.add_result_item(item, icon, color)
             else:
-                self.add_result_item(None, result.get("message", "未找到方案"))
+                self.add_result_item(result.get("message", "未找到方案"))
                 
             # Update info label
             self.info_label.setText(result.get("info_text", ""))

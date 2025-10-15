@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont, QPalette, QBrush, QPixmap, QIcon
 
 from qfluentwidgets import TitleLabel, EditableComboBox, PrimaryPushButton, PushButton, TextEdit, SmoothScrollArea, \
-    ComboBox, SegmentedWidget
+    ComboBox, SegmentedWidget, CommandBar, Action, FluentIcon
 
 from PyQt5.QtWidgets import QGraphicsBlurEffect
 
@@ -182,10 +182,33 @@ class MetroPlannerUI(QWidget):
 
         content_layout.addWidget(result_container, 1)
 
-        # Map widget
+        # Map widget container with CommandBar
+        map_container = QWidget()
+        map_layout = QVBoxLayout(map_container)
+        map_layout.setContentsMargins(0, 0, 0, 0)
+        map_layout.setSpacing(10)
+        
+        # CommandBar for zoom controls
+        self.map_command_bar = CommandBar()
+        self.zoom_in_action = Action(FluentIcon.ZOOM_IN, "放大", triggered=self._on_zoom_in)
+        self.zoom_out_action = Action(FluentIcon.ZOOM_OUT, "缩小", triggered=self._on_zoom_out)
+        self.reset_zoom_action = Action(FluentIcon.SYNC, "重置", triggered=self._on_reset_zoom)
+        self.map_command_bar.addAction(self.zoom_in_action)
+        self.map_command_bar.addAction(self.zoom_out_action)
+        self.map_command_bar.addAction(self.reset_zoom_action)
+        map_layout.addWidget(self.map_command_bar)
+        
+        # Wrap MapWidget in SmoothScrollArea
+        self.map_scroll_area = SmoothScrollArea()
+        self.map_scroll_area.setWidgetResizable(True)
+        self.map_scroll_area.setStyleSheet("background: #f4f7fa; border-radius: 10px; border:1px solid #dbeaf5;")
+        self.map_scroll_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.map_widget = MapWidget()
-        self.map_widget.setMinimumWidth(400)
-        content_layout.addWidget(self.map_widget, 1)
+        self.map_widget.setMinimumSize(400, 600)
+        self.map_scroll_area.setWidget(self.map_widget)
+        map_layout.addWidget(self.map_scroll_area, 1)
+        
+        content_layout.addWidget(map_container, 1)
 
         right_layout.addLayout(content_layout, 1)
 
@@ -316,3 +339,15 @@ class MetroPlannerUI(QWidget):
 
     def get_city(self):
         return self.city_input.currentText()
+    
+    def _on_zoom_in(self):
+        """Handle zoom in action"""
+        self.map_widget.zoom_in()
+    
+    def _on_zoom_out(self):
+        """Handle zoom out action"""
+        self.map_widget.zoom_out()
+    
+    def _on_reset_zoom(self):
+        """Handle reset zoom action"""
+        self.map_widget.reset_zoom()

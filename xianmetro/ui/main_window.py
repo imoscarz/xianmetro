@@ -191,12 +191,6 @@ class MetroPlannerUI(QWidget):
         
         # Store route results for switching between tabs
         self.route_results = [None, None, None]  # For three strategies
-        
-        # Keep legacy references for compatibility
-        self.result_areas = []
-        self.result_info_labels = [self.info_label, self.info_label, self.info_label]
-        self.result_scrolls = []
-        self.result_vlayouts = [self.result_vlayout, self.result_vlayout, self.result_vlayout]
 
     # 新增清空与添加方法
     def clear_result_area(self, idx=None):

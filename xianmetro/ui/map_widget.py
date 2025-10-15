@@ -53,7 +53,7 @@ class MapWidget(QWidget):
         for segment in self.route_data:
             for station_id in segment["stations"]:
                 station = self.stations_dict.get(station_id)
-                if station:
+                if station and station.coords and isinstance(station.coords, tuple) and len(station.coords) >= 2:
                     all_coords.append(station.coords)
                     
         if not all_coords:
@@ -94,7 +94,8 @@ class MapWidget(QWidget):
             for i in range(len(station_ids) - 1):
                 station1 = self.stations_dict.get(station_ids[i])
                 station2 = self.stations_dict.get(station_ids[i + 1])
-                if station1 and station2:
+                if (station1 and station1.coords and isinstance(station1.coords, tuple) and len(station1.coords) >= 2 and
+                    station2 and station2.coords and isinstance(station2.coords, tuple) and len(station2.coords) >= 2):
                     p1 = coord_to_point(station1.coords[0], station1.coords[1])
                     p2 = coord_to_point(station2.coords[0], station2.coords[1])
                     painter.drawLine(p1, p2)
@@ -107,7 +108,7 @@ class MapWidget(QWidget):
             
             for station_id in station_ids:
                 station = self.stations_dict.get(station_id)
-                if station:
+                if station and station.coords and isinstance(station.coords, tuple) and len(station.coords) >= 2:
                     point = coord_to_point(station.coords[0], station.coords[1])
                     
                     # Draw station circle

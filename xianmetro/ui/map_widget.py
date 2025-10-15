@@ -17,6 +17,9 @@ class MapWidget(QWidget):
         self.route_data = None  # Will store route information
         self.stations_dict = None  # Will store all stations information
         self.scale_factor = 1.0  # Zoom scale factor
+        self.pan_offset_x = 0.0  # Pan offset in x direction
+        self.pan_offset_y = 0.0  # Pan offset in y direction
+        self.last_mouse_pos = None  # For tracking mouse drag
         
         # Load icons once during initialization with error handling
         try:
@@ -73,7 +76,30 @@ class MapWidget(QWidget):
     def reset_zoom(self):
         """Reset zoom to default"""
         self.scale_factor = 1.0
+        self.pan_offset_x = 0.0
+        self.pan_offset_y = 0.0
         self.update()
+    
+    def mousePressEvent(self, event):
+        """Handle mouse press for panning"""
+        if event.button() == Qt.LeftButton:
+            self.last_mouse_pos = event.pos()
+            self.setCursor(Qt.ClosedHandCursor)
+    
+    def mouseMoveEvent(self, event):
+        """Handle mouse move for panning"""
+        if event.buttons() & Qt.LeftButton and self.last_mouse_pos is not None:
+            delta = event.pos() - self.last_mouse_pos
+            self.pan_offset_x += delta.x()
+            self.pan_offset_y += delta.y()
+            self.last_mouse_pos = event.pos()
+            self.update()
+    
+    def mouseReleaseEvent(self, event):
+        """Handle mouse release"""
+        if event.button() == Qt.LeftButton:
+            self.last_mouse_pos = None
+            self.setCursor(Qt.ArrowCursor)
         
     def paintEvent(self, event):
         """Paint the map with route"""
@@ -123,8 +149,8 @@ class MapWidget(QWidget):
         # Calculate center offset for zoom
         center_x = self.width() / 2
         center_y = self.height() / 2
-        offset_x = center_x - (center_x * self.scale_factor)
-        offset_y = center_y - (center_y * self.scale_factor)
+        offset_x = center_x - (center_x * self.scale_factor) + self.pan_offset_x
+        offset_y = center_y - (center_y * self.scale_factor) + self.pan_offset_y
         
         # Handle edge case where all coordinates are the same
         lat_range = max_lat - min_lat if max_lat != min_lat else 0.01
@@ -155,6 +181,12 @@ class MapWidget(QWidget):
                 if self.route_data[i]["stations"]:
                     transfer_station = self.route_data[i]["stations"][-1]
                     transfer_stations.append((i, transfer_station))
+        
+        def is_special_station(station_id):
+            """Check if a station is special (boarding, alighting, or transfer)"""
+            return (station_id == boarding_station or 
+                    station_id == alighting_station or
+                    any(station_id == ts_id for _, ts_id in transfer_stations))
         
         # Draw route segments
         for i, segment in enumerate(self.route_data):
@@ -215,21 +247,22 @@ class MapWidget(QWidget):
                     is_alighting = (station_id == alighting_station)
                     is_transfer = any(station_id == ts_id for _, ts_id in transfer_stations)
                     
-                    # Draw station circle
-                    painter.setBrush(QBrush(QColor(color)))
-                    painter.setPen(QPen(QColor("#ffffff"), 2))
-                    painter.drawEllipse(point, 6, 6)
+                    # Draw station circle only for non-special stations
+                    if not is_special_station(station_id):
+                        painter.setBrush(QBrush(QColor(color)))
+                        painter.setPen(QPen(QColor("#ffffff"), 2))
+                        painter.drawEllipse(point, 6, 6)
                     
                     # Draw icon for special stations
                     icon_size = 24  # Keep icon size constant
                     if is_boarding and not self.up_icon.isNull():
-                        icon_rect = QRectF(point.x() - icon_size/2, point.y() - icon_size - 10, icon_size, icon_size)
+                        icon_rect = QRectF(point.x() - icon_size/2, point.y() - icon_size*1/2 , icon_size, icon_size)
                         painter.drawPixmap(icon_rect.toRect(), self.up_icon)
                     elif is_alighting and not self.down_icon.isNull():
-                        icon_rect = QRectF(point.x() - icon_size/2, point.y() - icon_size - 10, icon_size, icon_size)
+                        icon_rect = QRectF(point.x() - icon_size/2, point.y() - icon_size*1/2 , icon_size, icon_size)
                         painter.drawPixmap(icon_rect.toRect(), self.down_icon)
                     elif is_transfer and not self.transfer_icon.isNull():
-                        icon_rect = QRectF(point.x() - icon_size/2, point.y() - icon_size - 10, icon_size, icon_size)
+                        icon_rect = QRectF(point.x() - icon_size/2, point.y() - icon_size*1/2 , icon_size, icon_size)
                         painter.drawPixmap(icon_rect.toRect(), self.transfer_icon)
                     
                     # Draw station name with constant font size

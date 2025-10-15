@@ -97,7 +97,7 @@ class MetroPlannerUI(QWidget):
         # 填充下拉内容（站名和ID）
         city_names = UPDATE_LINK.keys()
         station_names = get_station_list()
-        station_ids = get_id_list()
+        station_ids = []
         # 合并并去重
         start_options = list(dict.fromkeys(station_names + station_ids))
         end_options = start_options.copy()

@@ -4,6 +4,7 @@ Map widget for displaying metro route on a canvas
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import Qt, QPointF, QRectF
 from PyQt5.QtGui import QPainter, QPen, QColor, QFont, QBrush, QPainterPath, QPixmap
+from xianmetro.assets.icon import UP, DOWN, TRANSFER
 
 
 class MapWidget(QWidget):
@@ -16,6 +17,11 @@ class MapWidget(QWidget):
         self.route_data = None  # Will store route information
         self.stations_dict = None  # Will store all stations information
         self.scale_factor = 1.0  # Zoom scale factor
+        
+        # Load icons once during initialization
+        self.up_icon = QPixmap(UP)
+        self.down_icon = QPixmap(DOWN)
+        self.transfer_icon = QPixmap(TRANSFER)
         
     def set_route(self, route, stations_dict, line_colors):
         """
@@ -173,12 +179,6 @@ class MapWidget(QWidget):
                         painter.setPen(pen)
                         painter.drawLine(p1, p2)
         
-        # Load icons
-        from xianmetro.assets.icon import UP, DOWN, TRANSFER
-        up_icon = QPixmap(UP)
-        down_icon = QPixmap(DOWN)
-        transfer_icon = QPixmap(TRANSFER)
-        
         # Draw station markers, labels, and icons
         for seg_idx, segment in enumerate(self.route_data):
             line_name = segment["line"]
@@ -202,15 +202,15 @@ class MapWidget(QWidget):
                     
                     # Draw icon for special stations
                     icon_size = 24  # Keep icon size constant
-                    if is_boarding and not up_icon.isNull():
+                    if is_boarding and not self.up_icon.isNull():
                         icon_rect = QRectF(point.x() - icon_size/2, point.y() - icon_size - 10, icon_size, icon_size)
-                        painter.drawPixmap(icon_rect.toRect(), up_icon)
-                    elif is_alighting and not down_icon.isNull():
+                        painter.drawPixmap(icon_rect.toRect(), self.up_icon)
+                    elif is_alighting and not self.down_icon.isNull():
                         icon_rect = QRectF(point.x() - icon_size/2, point.y() - icon_size - 10, icon_size, icon_size)
-                        painter.drawPixmap(icon_rect.toRect(), down_icon)
-                    elif is_transfer and not transfer_icon.isNull():
+                        painter.drawPixmap(icon_rect.toRect(), self.down_icon)
+                    elif is_transfer and not self.transfer_icon.isNull():
                         icon_rect = QRectF(point.x() - icon_size/2, point.y() - icon_size - 10, icon_size, icon_size)
-                        painter.drawPixmap(icon_rect.toRect(), transfer_icon)
+                        painter.drawPixmap(icon_rect.toRect(), self.transfer_icon)
                     
                     # Draw station name with constant font size
                     painter.setPen(QColor("#333"))

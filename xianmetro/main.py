@@ -130,20 +130,29 @@ def main():
         if not start_id or not end_id:
             show_message(window, "请输入有效的起点和终点（支持站名或ID）！")
             for idx in range(3):
-                window.clear_result_area(idx)
-                window.result_info_labels[idx].setText("")
+                window.store_route_result(idx, message="请输入有效的起点和终点")
+            window.on_route_selector_changed()
             return
         if start_id == end_id:
             show_message(window, "你搁这原地TP呢？起点和终点不能相同！")
             for idx in range(3):
-                window.clear_result_area(idx)
-                window.result_info_labels[idx].setText("")
+                window.store_route_result(idx, message="起点和终点不能相同")
+            window.on_route_selector_changed()
             return
         # 路径规划
         results = []
         for strategy in [1, 2, 3]:
             result = plan_route(start_id, end_id, strategy=strategy)
             results.append(result)
+
+        # Build line colors dictionary
+        line_colors = {}
+        for result in results:
+            if result:
+                for segment in result["route"]:
+                    line_name = segment["line"]
+                    if line_name not in line_colors:
+                        line_colors[line_name] = get_line_color(line_name)
 
         # 输出各方案
         for idx, result in enumerate(results):
@@ -155,14 +164,21 @@ def main():
                     f"换乘次数: {result['transfers']}\n"
                     f"{get_price_text(result['total_distance'], window.get_city())}"
                 )
-                window.clear_result_area(idx)
-                for item, icon, color in zip(route_lines, icon_list, color_list):
-                    window.add_result_item(idx, item, icon, color)
-                window.result_info_labels[idx].setText(info_text)
+                window.store_route_result(
+                    idx, 
+                    route_lines=route_lines, 
+                    icon_list=icon_list, 
+                    color_list=color_list,
+                    info_text=info_text,
+                    route_data=result["route"],
+                    stations_dict=stations,
+                    line_colors=line_colors
+                )
             else:
-                window.clear_result_area(idx)
-                window.add_result_item(idx, "未找到方案")
-                window.result_info_labels[idx].setText("")
+                window.store_route_result(idx, message="未找到方案")
+        
+        # Trigger display update for current selected tab
+        window.on_route_selector_changed()
 
     def on_plan_clicked():
         """
@@ -190,6 +206,7 @@ def main():
     window.plan_btn.clicked.connect(on_plan_clicked)
     window.refresh_btn.clicked.connect(on_refresh_clicked)
     window.city_input.currentTextChanged.connect(on_city_changed)
+    window.route_selector.currentItemChanged.connect(window.on_route_selector_changed)
 
     window.show()
     sys.exit(app.exec_())

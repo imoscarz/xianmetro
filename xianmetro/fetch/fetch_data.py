@@ -1,6 +1,6 @@
 import __main__
 import requests
-from assets import UPDATE_LINK
+from xianmetro.assets import UPDATE_LINK
 import json
 
 def get_metro_info(city = "西安"):

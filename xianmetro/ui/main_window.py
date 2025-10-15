@@ -143,10 +143,12 @@ class MetroPlannerUI(QWidget):
 
         # Add SegmentedWidget for route selection
         self.route_selector = SegmentedWidget()
-        self.route_selector.addItem("最少换乘", "transfer")
-        self.route_selector.addItem("最少站点", "stops")
-        self.route_selector.addItem("最短距离", "distance")
-        self.route_selector.setCurrentItem("最少换乘")
+        self.route_selector.addItem("transfer", "最少换乘")
+        self.route_selector.addItem("stops", "最少站点")
+        self.route_selector.addItem("distance", "最短距离")
+        self.route_selector.setCurrentItem("transfer")
+        self.route_selector.setMinimumHeight(50)
+        self.route_selector.setFont(QFont("Microsoft YaHei", 13))
         right_layout.addWidget(self.route_selector)
 
         # Create horizontal layout for result and map
@@ -253,7 +255,7 @@ class MetroPlannerUI(QWidget):
             
     def update_map_display(self):
         """Update map display based on current selection"""
-        current_tab = self.route_selector.currentItem().routeKey()
+        current_tab = self.route_selector.currentRouteKey()
         idx_map = {"transfer": 0, "stops": 1, "distance": 2}
         idx = idx_map.get(current_tab, 0)
         
@@ -268,7 +270,7 @@ class MetroPlannerUI(QWidget):
     
     def on_route_selector_changed(self):
         """Handle route selector tab change"""
-        current_tab = self.route_selector.currentItem().routeKey()
+        current_tab = self.route_selector.currentRouteKey()
         idx_map = {"transfer": 0, "stops": 1, "distance": 2}
         idx = idx_map.get(current_tab, 0)
         

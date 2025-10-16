@@ -1,0 +1,71 @@
+# 西安地铁路线规划器 - 中文语言文件
+
+# 应用程序信息
+app:
+  title: "地铁路线规划 BY imoscarz"
+  author: "imoscarz"
+  github_url: "https://github.com/imoscarz/xianmetro"
+  welcome_message: "欢迎使用西安地铁线路规划器！"
+  easter_egg_message: "缪尔塞斯真的很可爱！！！！！"
+
+# 窗口标题和标签
+ui:
+  window_title: "地铁路线规划 BY imoscarz"
+  title_label: "地铁路线规划"
+  current_city: "当前城市"
+  start_station: "起点站:"
+  end_station: "终点站:"
+  start_placeholder: "请输入或选择起点站名/站点ID"
+  end_placeholder: "请输入或选择终点站名/站点ID"
+  city_placeholder: "请选择城市"
+  plan_button: "开始规划"
+  refresh_button: "刷新路线"
+  zoom_in: "放大"
+  zoom_out: "缩小"
+  reset_zoom: "重置"
+  default_map_text: "请先规划路线"
+
+# 路线策略
+strategy:
+  least_transfer: "最少换乘"
+  least_stops: "最少站点"
+  shortest_distance: "最短距离"
+
+# 消息提示
+messages:
+  dialog_title: "提示"
+  invalid_input: "请输入有效的起点和终点（支持站名或ID）！"
+  same_station: "你搁这原地TP呢？起点和终点不能相同！"
+  data_refreshed: "{city}地铁数据已刷新成功！"
+  data_refresh_failed: "{city}地铁数据刷新失败: {error}"
+  city_switched: "已切换至{city}，地铁数据已更新！"
+  no_route_found: "未找到方案"
+  easter_egg_found: "You Found The Easter egg\n欢迎使用西安地铁线路规划器！\n作者: imoscarz\nGitHub:https://github.com/imoscarz/xianmetro"
+  easter_egg_secret: "You Found The Easter egg\n缪尔塞斯真的很可爱！！！！！"
+
+# 路线描述
+route:
+  board_at: "在"
+  take_line: "乘坐"
+  alight_at: "在"
+  alight: "下车"
+  transfer_at: "在"
+  from_line: "由"
+  transfer_to: "换乘"
+
+# 信息显示
+info:
+  total_stops: "总站点数: {stops}"
+  total_distance: "总距离: {distance} km"
+  transfer_times: "换乘次数: {times}"
+  price_normal: "普通{price}元"
+  price_card: "地铁卡{price:.1f}元"
+  price_student: "学生卡{price:.1f}元"
+  price_free: "老年卡/爱心卡/拥军卡免费"
+  price_info: "票价: {normal} | {card} | {student} | {free}"
+  price_not_supported: "暂不支持当前城市的票价计算"
+  price_format: "票价: 普通{normal}元 | 地铁卡{card:.1f}元 | 学生卡{student:.1f}元 | 老年卡/爱心卡/拥军卡免费"
+
+# 默认值
+defaults:
+  city: "西安"

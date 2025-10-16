@@ -67,8 +67,8 @@ def parse_stations():
             else:
                 # 换乘站：添加新的线路信息（如果尚未存在）
                 # 防止line_name重复
-                if not any(l.line_name == line_name
-                           for l in station_dict[station_id].line):
+                if not any(line_obj.line_name == line_name
+                           for line_obj in station_dict[station_id].line):
                     station_dict[station_id].line.append(station_in_line)
 
     return station_dict

@@ -11,7 +11,7 @@ from xianmetro.i18n import get_text
 def show_message(window, msg: str):
     """
     显示消息对话框
-    
+
     Args:
         window: 父窗口对象
         msg: 要显示的消息内容
@@ -28,20 +28,20 @@ def format_route_output_verbose(route, stations, get_line_color_func):
     """
     格式化路线输出：每行为一个站点，包含上车、换乘和下车提示
     返回item字典列表和icons列表，每个卡片包含多个不同颜色的文本片段
-    
+
     Args:
         route: 路线段列表，每段包含线路名称和站点ID列表
         stations: 站点字典，用于ID到站点名称的转换
         get_line_color_func: 获取线路颜色的函数
-        
+
     Returns:
-        tuple: (items_list, icons_list) 
+        tuple: (items_list, icons_list)
             - items_list: 每个元素是一个字典列表，代表一个卡片中的多个文本片段
             - icons_list: 每个元素是一个图标，对应每个卡片
     """
     from xianmetro.core import id_to_name
     from xianmetro.assets import UP, DOWN, TRANSFER, INFO
-    
+
     items_list = []
     icons_list = []
 
@@ -164,22 +164,22 @@ def format_route_output_verbose(route, stations, get_line_color_func):
 def get_price_text(distance: float, city: str, calc_price_func) -> str:
     """
     获取票价信息文本
-    
+
     Args:
         distance: 距离（公里）
         city: 城市名称
         calc_price_func: 计算票价的函数
-        
+
     Returns:
         str: 格式化的票价信息文本
     """
     if city != get_text("defaults.city", "西安"):
         return get_text("info.price_not_supported", "暂不支持当前城市的票价计算")
-    
+
     price = calc_price_func(int(distance + 0.5))
     price_card = calc_price_func(int(distance + 0.5), discount=1)
     price_student = calc_price_func(int(distance + 0.5), discount=2)
-    
+
     return get_text(
         "info.price_format",
         "票价: 普通{normal}元 | 地铁卡{card:.1f}元 | 学生卡{student:.1f}元 | 老年卡/爱心卡/拥军卡免费",

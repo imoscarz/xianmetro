@@ -24,14 +24,13 @@ from xianmetro.ui.map_widget import MapWidget
 from xianmetro.i18n import get_text
 
 
-
 class MetroPlannerUI(QWidget):
     """
     地铁路线规划器主窗口类
-    
+
     提供完整的用户界面，包括输入控件、结果显示和地图可视化。
     """
-    
+
     def __init__(self):
         """初始化主窗口"""
         super().__init__()
@@ -167,9 +166,11 @@ class MetroPlannerUI(QWidget):
 
         # 路线策略选择器
         self.route_selector = SegmentedWidget()
-        self.route_selector.addItem("transfer", get_text("strategy.least_transfer"))
+        self.route_selector.addItem(
+            "transfer", get_text("strategy.least_transfer"))
         self.route_selector.addItem("stops", get_text("strategy.least_stops"))
-        self.route_selector.addItem("distance", get_text("strategy.shortest_distance"))
+        self.route_selector.addItem(
+            "distance", get_text("strategy.shortest_distance"))
         self.route_selector.setCurrentItem("transfer")
         self.route_selector.setMinimumHeight(50)
         self.route_selector.setFont(QFont("Microsoft YaHei", 13))
@@ -215,7 +216,7 @@ class MetroPlannerUI(QWidget):
         map_layout = QVBoxLayout(map_container)
         map_layout.setContentsMargins(0, 0, 0, 0)
         map_layout.setSpacing(10)
-        
+
         # 地图缩放控制栏
         self.map_command_bar = CommandBar()
         self.zoom_in_action = Action(
@@ -237,32 +238,33 @@ class MetroPlannerUI(QWidget):
         self.map_command_bar.addAction(self.zoom_out_action)
         self.map_command_bar.addAction(self.reset_zoom_action)
         map_layout.addWidget(self.map_command_bar)
-        
+
         # 地图滚动区域
         self.map_scroll_area = SmoothScrollArea()
         self.map_scroll_area.setWidgetResizable(True)
         self.map_scroll_area.setStyleSheet(
             "background: #f4f7fa; border-radius: 10px; border:1px solid #dbeaf5;"
         )
-        self.map_scroll_area.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.map_scroll_area.setSizePolicy(
+            QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.map_widget = MapWidget()
         self.map_widget.setMinimumSize(400, 600)
         self.map_scroll_area.setWidget(self.map_widget)
         map_layout.addWidget(self.map_scroll_area, 1)
-        
+
         content_layout.addWidget(map_container, 1)
 
         right_layout.addLayout(content_layout, 1)
 
         main_layout.addWidget(right_widget, 70)
-        
+
         # 存储路线结果用于切换标签页
         self.route_results = [None, None, None]  # 三种策略的结果
 
     def clear_result_area(self, idx=None):
         """
         清空结果显示区域
-        
+
         Args:
             idx: 保留用于向后兼容，但会被忽略
         """
@@ -276,7 +278,7 @@ class MetroPlannerUI(QWidget):
     def add_result_item(self, items, icon=None):
         """
         添加结果项到当前显示区域，支持多个彩色文本片段
-        
+
         Args:
             items: 文本字典列表，每个字典包含text、text_color和background_color
             icon: 要显示的图标（PNG路径或FluentIcon）
@@ -305,8 +307,11 @@ class MetroPlannerUI(QWidget):
             if isinstance(icon, str) and icon.endswith('.png'):
                 pixmap = QPixmap(icon)
                 icon_label.setPixmap(
-                    pixmap.scaled(32, 32, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                )
+                    pixmap.scaled(
+                        32,
+                        32,
+                        Qt.KeepAspectRatio,
+                        Qt.SmoothTransformation))
             else:
                 try:
                     icon_label.setPixmap(
@@ -347,13 +352,12 @@ class MetroPlannerUI(QWidget):
 
         self.result_vlayout.addWidget(card)
 
-
     def update_map_display(self):
         """根据当前选择更新地图显示"""
         current_tab = self.route_selector.currentRouteKey()
         idx_map = {"transfer": 0, "stops": 1, "distance": 2}
         idx = idx_map.get(current_tab, 0)
-        
+
         result = self.route_results[idx]
         if result and result.get("route_data"):
             route = result["route_data"]
@@ -362,41 +366,42 @@ class MetroPlannerUI(QWidget):
             self.map_widget.set_route(route, stations, line_colors)
         else:
             self.map_widget.clear_route()
-    
+
     def on_route_selector_changed(self):
         """处理路线选择器标签页切换事件"""
         current_tab = self.route_selector.currentRouteKey()
         idx_map = {"transfer": 0, "stops": 1, "distance": 2}
         idx = idx_map.get(current_tab, 0)
-        
+
         # 清空并显示选择的路线结果
         self.clear_result_area()
         result = self.route_results[idx]
-        
+
         if result:
             # 显示路线行
             if result.get("item_list"):
-                for item, icon in zip(result["item_list"], result["icon_list"]):
+                for item, icon in zip(
+                        result["item_list"], result["icon_list"]):
                     self.add_result_item(item, icon)
             else:
                 self.add_result_item(
                     result.get("message", get_text("messages.no_route_found"))
                 )
-                
+
             # 更新信息标签
             self.info_label.setText(result.get("info_text", ""))
         else:
             self.info_label.setText("")
-            
+
         # 更新地图
         self.update_map_display()
-    
+
     def store_route_result(self, idx, item_list=None, icon_list=None,
-                          info_text="", route_data=None, stations_dict=None,
-                          line_colors=None, message=None):
+                           info_text="", route_data=None, stations_dict=None,
+                           line_colors=None, message=None):
         """
         存储路线结果用于稍后切换标签页时显示
-        
+
         Args:
             idx: 策略索引（0-2）
             item_list: 结果项列表
@@ -428,15 +433,15 @@ class MetroPlannerUI(QWidget):
     def get_city(self):
         """获取当前选择的城市"""
         return self.city_input.currentText()
-    
+
     def _on_zoom_in(self):
         """处理地图放大操作"""
         self.map_widget.zoom_in()
-    
+
     def _on_zoom_out(self):
         """处理地图缩小操作"""
         self.map_widget.zoom_out()
-    
+
     def _on_reset_zoom(self):
         """处理地图重置缩放操作"""
         self.map_widget.reset_zoom()

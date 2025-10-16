@@ -1,23 +1,49 @@
-import __main__
-import requests
-from xianmetro.assets import UPDATE_LINK
-import json
+"""
+数据获取模块
 
-def get_metro_info(city = "西安"):
+负责从高德地图API获取地铁信息，解析数据并保存到本地文件。
+提供地铁站点列表、线路颜色等查询功能。
+"""
+
+import json
+import requests
+
+from xianmetro.assets import UPDATE_LINK
+
+
+def get_metro_info(city="西安"):
     """
-    Fetch metro station information from AMAP API, and return it as a JSON object.
-    :return: json object containing metro station information
+    从高德地图API获取地铁站点信息
+
+    Args:
+        city: 城市名称，默认为"西安"
+
+    Returns:
+        dict: 包含地铁站点信息的JSON对象
     """
     api_url = UPDATE_LINK.get(city, UPDATE_LINK["西安"])
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"}
-    response = requests.get(api_url,headers=headers)
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/58.0.3029.110 Safari/537.3"
+        )
+    }
+    response = requests.get(api_url, headers=headers)
     return json.loads(response.text)
+
 
 def parse_metro_info(metro_json):
     """
-    Parse metro station information from JSON object.
-    :param metro_json: json object containing metro station information
-    :return: list of dictionaries containing parsed metro station information
+    解析地铁站点JSON信息
+
+    将从API获取的原始JSON数据转换为结构化的站点信息列表。
+
+    Args:
+        metro_json: 包含地铁站点信息的JSON对象
+
+    Returns:
+        list: 解析后的地铁站点信息列表，每个元素包含线路和站点详情
     """
     _metro_info = []
     lines = metro_json['l']
@@ -45,18 +71,26 @@ def parse_metro_info(metro_json):
         })
     return _metro_info
 
+
 def save_to_file(metro_info):
     """
-    Save metro station information to a JSON file.
-    :param metro_info: list of dictionaries containing parsed metro station information
+    将地铁站点信息保存到JSON文件
+
+    Args:
+        metro_info: 解析后的地铁站点信息列表
     """
     with open('metro_info.json', 'w', encoding='utf-8') as f:
         json.dump(metro_info, f, ensure_ascii=False, indent=4)
 
+
 def load_from_file():
     """
-    Load metro station information from a JSON file.
-    :return: list of dictionaries containing parsed metro station information
+    从JSON文件加载地铁站点信息
+
+    如果文件不存在，则自动获取并保存数据。
+
+    Returns:
+        list: 解析后的地铁站点信息列表
     """
     try:
         with open('metro_info.json', 'r', encoding='utf-8') as f:
@@ -66,10 +100,13 @@ def load_from_file():
         save_to_file(parse_metro_info(get_metro_info()))
         return load_from_file()
 
+
 def get_id_list():
     """
-    Get a list of all station IDs.
-    :return: list of station IDs
+    获取所有站点ID列表
+
+    Returns:
+        list: 站点ID列表
     """
     try:
         metro_info = load_from_file()
@@ -82,10 +119,13 @@ def get_id_list():
             id_list.append(station_id)
     return id_list
 
+
 def get_station_list():
     """
-    Get a list of all station names.
-    :return: list of station names
+    获取所有站点名称列表
+
+    Returns:
+        list: 站点名称列表
     """
     try:
         metro_info = load_from_file()
@@ -98,11 +138,16 @@ def get_station_list():
             name_list.append(line['stations'][station_id]['station_name'])
     return name_list
 
+
 def get_line_color(line_name):
     """
-    Get the color of a metro line.
-    :param line_name: name of the metro line
-    :return: color of the metro line
+    获取地铁线路的颜色
+
+    Args:
+        line_name: 线路名称
+
+    Returns:
+        str: 线路颜色的十六进制表示（如"#FF0000"），未找到则返回"#000000"
     """
     try:
         metro_info = load_from_file()
@@ -112,7 +157,8 @@ def get_line_color(line_name):
     for line in metro_info:
         if line['line_name'] == line_name:
             return f"#{line['color']}"
-    return "#000000"  # default color
+    return "#000000"  # 默认颜色
+
 
 if __name__ == "__main__":
     metro_json = get_metro_info()

@@ -23,8 +23,9 @@ class MetroPlannerUI(QWidget):
         super().__init__()
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowTitle("地铁路线规划 BY imoscarz")
-        # self.resize(1920, 1080)
-        self.setFixedSize(1920, 1080)
+        self.resize(1920, 1080)
+        self.setMinimumSize(1920, 1080)
+        self.setWindowIcon(QIcon("./xianmetro/assets/icon.ico"))
         # self.setMinimumSize(1200, 700)
         self._set_background()
         self._init_ui()
@@ -228,7 +229,86 @@ class MetroPlannerUI(QWidget):
             if widget is not None:
                 widget.deleteLater()
 
-    def add_result_item(self, text, icon=None, color='#FFFFFF'):
+    def add_result_item(self, items, icon=None):
+        """
+        Add result item to the current display area with multiple colored text segments.
+
+        Args:
+            items: List of dictionaries with text, text_color, and background_color
+            icon: Icon to display (PNG path or FluentIcon)
+        """
+        # 统一处理输入格式
+        if isinstance(items, str):
+            # 单个字符串输入，使用默认颜色
+            items = [{'text': items, 'text_color': '#333333', 'background_color': '#FFFFFF'}]
+        elif isinstance(items, dict):
+            # 单个字典输入，转换为列表
+            items = [items]
+        elif not isinstance(items, list):
+            raise ValueError("items must be a string, dict, or list of dicts")
+
+        card = CardWidget(self)
+        card_layout = QHBoxLayout(card)
+        card_layout.setContentsMargins(16, 8, 16, 8)
+        card_layout.setSpacing(18)
+
+        # 左侧icon
+        icon_label = QLabel()
+        icon_label.setFixedSize(40, 40)
+        if icon:
+            # 支持assets路径（png）和 FluentIcon
+            if isinstance(icon, str) and icon.endswith('.png'):
+                pixmap = QPixmap(icon)
+                icon_label.setPixmap(pixmap.scaled(32, 32, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+            else:
+                # 尝试用FluentIcon
+                try:
+                    icon_label.setPixmap(QPixmap(QIcon.fromTheme(icon).pixmap(QSize(32, 32))))
+                except Exception:
+                    icon_label.setText("🛈")
+        else:
+            icon_label.setText("🛈")
+        icon_label.setAlignment(Qt.AlignCenter)
+
+        # 右侧文本区域 - 使用水平布局放置多个文本标签
+        text_container = QWidget()
+        text_layout = QHBoxLayout(text_container)
+        text_layout.setContentsMargins(0, 0, 0, 0)
+        text_layout.setSpacing(8)  # 文本片段之间的间距
+
+        for item in items:
+            # 确保item包含必要的键
+            text = item.get('text', '')
+            text_color = item.get('text_color', '#333333')
+            background_color = item.get('background_color', '#FFFFFF')
+
+            # 为每个文本片段创建标签
+            text_label = QLabel(text)
+            text_label.setFont(QFont("Microsoft YaHei", 13))
+
+            # 设置文本片段的样式
+            text_label.setStyleSheet(f"""
+                background-color: {background_color};
+                border-radius: 8px;
+                padding: 10px 18px;
+                color: {text_color};
+            """)
+            text_label.setWordWrap(True)
+
+            # 添加到文本布局
+            text_layout.addWidget(text_label)
+
+        # 添加弹性空间使文本左对齐
+        text_layout.addStretch()
+
+        # 加入主布局
+        card_layout.addWidget(icon_label)
+        card_layout.addWidget(text_container)
+
+        # 添加到结果区
+        self.result_vlayout.addWidget(card)
+
+    def _add_result_item(self, text, icon=None, color='#FFFFFF'):
         """
         Add result item to the current display area.
         
@@ -303,9 +383,9 @@ class MetroPlannerUI(QWidget):
         
         if result:
             # Display route lines
-            if result.get("route_lines"):
-                for item, icon, color in zip(result["route_lines"], result["icon_list"], result["color_list"]):
-                    self.add_result_item(item, icon, color)
+            if result.get("item_list"):
+                for item, icon in zip(result["item_list"], result["icon_list"]):
+                    self.add_result_item(item, icon)
             else:
                 self.add_result_item(result.get("message", "未找到方案"))
                 
@@ -317,13 +397,12 @@ class MetroPlannerUI(QWidget):
         # Update map
         self.update_map_display()
     
-    def store_route_result(self, idx, route_lines=None, icon_list=None, color_list=None, 
+    def store_route_result(self, idx, item_list=None, icon_list=None,
                           info_text="", route_data=None, stations_dict=None, line_colors=None, message=None):
         """Store route result for later display when switching tabs"""
         self.route_results[idx] = {
-            "route_lines": route_lines,
+            "item_list": item_list,
             "icon_list": icon_list,
-            "color_list": color_list,
             "info_text": info_text,
             "route_data": route_data,
             "stations_dict": stations_dict,

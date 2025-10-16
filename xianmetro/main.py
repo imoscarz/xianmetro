@@ -11,42 +11,70 @@ from qfluentwidgets import MessageBox, InfoBarIcon
 
 def format_route_output_verbose(route, stations):
     """
-    格式化路线输出：每行为一个站点，包含上车、换乘和下车提示，icon统一用assets中的FluentIcon
+    格式化路线输出：每行为一个站点，包含上车、换乘和下车提示
+    返回item字典列表和icons列表，每个卡片包含多个不同颜色的文本片段
     """
-    output = []
-    icon_list = []
-    color_list = []
+    items_list = []  # 每个元素是一个字典列表，代表一个卡片中的多个文本片段
+    icons_list = []  # 每个元素是一个图标，对应每个卡片
+
     for i, segment in enumerate(route):
         line = segment["line"]
         station_ids = segment["stations"]
         n = len(station_ids)
-        # 上车提示
+        line_color = get_line_color(line)
+
+        # 上车提示卡片
         if i == 0 and n > 0:
             start_station = id_to_name(stations, station_ids[0])
-            output.append(f"在【{start_station}】乘坐【{line}】")
-            icon_list.append(UP)
-            color_list.append(get_line_color(line))
+            card_items = [
+                {"text": "在", "text_color": "#000000", "background_color": "#FFFFFF"},
+                {"text": start_station, "text_color": "#FFFFFF", "background_color": line_color},
+                {"text": "乘坐", "text_color": "#000000", "background_color": "#FFFFFF"},
+                {"text": line, "text_color": "#FFFFFF", "background_color": line_color}
+            ]
+            items_list.append(card_items)
+            icons_list.append(UP)
+
+        # 中间站点卡片
         for j, sid in enumerate(station_ids):
             station_name = id_to_name(stations, sid)
-            if i == 0 and j == 0:
+            if i == 0 and j == 0:  # 跳过起点站（已在乘车提示中显示）
                 continue
-            output.append(f"{station_name}")
-            icon_list.append(INFO)
-            color_list.append(get_line_color(line))
-            # 换乘提示
+
+            # 普通站点卡片
+            card_items = [
+                {"text": station_name, "text_color": "#FFFFFF", "background_color": line_color}
+            ]
+            items_list.append(card_items)
+            icons_list.append(INFO)
+
+            # 换乘提示卡片
             if j == n - 1 and i < len(route) - 1:
                 next_line = route[i + 1]["line"]
-                output.append(f"在【{station_name}】由【{line}】换乘【{next_line}】")
-                color_list.append("#FFFFFF")
-                icon_list.append(TRANSFER)
-        # 终点提示
+                next_line_color = get_line_color(next_line)
+                card_items = [
+                    {"text": "在", "text_color": "#000000", "background_color": "#FFFFFF"},
+                    {"text": station_name, "text_color": "#FFFFFF", "background_color": line_color},
+                    {"text": "由", "text_color": "#000000", "background_color": "#FFFFFF"},
+                    {"text": line, "text_color": "#FFFFFF", "background_color": line_color},
+                    {"text": "换乘", "text_color": "#000000", "background_color": "#FFFFFF"},
+                    {"text": next_line, "text_color": "#FFFFFF", "background_color": next_line_color}
+                ]
+                items_list.append(card_items)
+                icons_list.append(TRANSFER)
+
+        # 终点提示卡片
         if i == len(route) - 1 and n > 0:
             end_station = id_to_name(stations, station_ids[-1])
-            output.append(f"在【{end_station}】下车")
-            icon_list.append(DOWN)
-            # print(get_line_color(end_station))
-            color_list.append(get_line_color(line))
-    return output, icon_list, color_list
+            card_items = [
+                {"text": "在", "text_color": "#000000", "background_color": "#FFFFFF"},
+                {"text": end_station, "text_color": "#FFFFFF", "background_color": line_color},
+                {"text": "下车", "text_color": "#000000", "background_color": "#FFFFFF"}
+            ]
+            items_list.append(card_items)
+            icons_list.append(DOWN)
+
+    return items_list, icons_list
 
 def show_message(window, msg):
     # 使用 qfluentwidgets 的 MessageDialog
@@ -157,7 +185,7 @@ def main():
         # 输出各方案
         for idx, result in enumerate(results):
             if result:
-                route_lines, icon_list, color_list = format_route_output_verbose(result["route"], stations)
+                item_list, icon_list = format_route_output_verbose(result["route"], stations)
                 info_text = (
                     f"总站点数: {result['total_stops']}\n"
                     f"总距离: {result['total_distance']} km\n"
@@ -166,9 +194,8 @@ def main():
                 )
                 window.store_route_result(
                     idx, 
-                    route_lines=route_lines, 
-                    icon_list=icon_list, 
-                    color_list=color_list,
+                    item_list=item_list,
+                    icon_list=icon_list,
                     info_text=info_text,
                     route_data=result["route"],
                     stations_dict=stations,

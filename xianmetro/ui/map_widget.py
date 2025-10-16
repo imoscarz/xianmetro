@@ -227,7 +227,7 @@ class MapWidget(QWidget):
                         # Draw connection with next line's color
                         pen = QPen(QColor(next_color))
                         pen.setWidth(4)
-                        pen.setStyle(Qt.DashLine)  # Use dashed line to distinguish transfer connection
+                        #pen.setStyle(Qt.DashLine)  # Use dashed line to distinguish transfer connection
                         painter.setPen(pen)
                         painter.drawLine(p1, p2)
         

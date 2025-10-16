@@ -11,7 +11,7 @@ from typing import Dict, Any
 __name__ = "i18n"
 __version__ = "0.1.0"
 __author__ = "imoscarz"
-__description__ = "Internationalization support for the Xi'an Metro Route Planner application."
+__description__ = "国际化支持模块，为西安地铁路线规划器应用程序提供多语言功能。"
 
 
 class I18n:

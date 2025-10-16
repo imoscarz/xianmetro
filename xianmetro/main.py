@@ -16,8 +16,7 @@ from xianmetro.fetch import (
     save_to_file,
     get_line_color
 )
-from xianmetro.utils import calc_price
-from xianmetro.util import show_message, format_route_output_verbose, get_price_text
+from xianmetro.utils import calc_price, show_message, format_route_output_verbose, get_price_text
 from xianmetro.i18n import get_text
 
 

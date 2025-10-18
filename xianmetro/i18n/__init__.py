@@ -82,6 +82,28 @@ class I18n:
                 return value
 
         return str(value) if not isinstance(value, dict) else default
+    
+    def get_nested(self, key: str, default=None):
+        """
+        获取嵌套的数据结构（如列表、字典）
+        
+        Args:
+            key: 文本键，支持点号分隔的嵌套路径
+            default: 默认值，当键不存在时返回
+            
+        Returns:
+            原始的数据结构（可能是dict、list等）
+        """
+        keys = key.split('.')
+        value = self._texts
+
+        for k in keys:
+            if isinstance(value, dict):
+                value = value.get(k)
+            else:
+                return default
+
+        return value if value is not None else default
 
     def __call__(self, key: str, default: str = "", **kwargs) -> str:
         """

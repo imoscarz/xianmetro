@@ -104,10 +104,10 @@ def format_route_output_verbose(route, stations, get_line_color_func):
     items_list = []
     icons_list = []
     
-    # 获取格式模板
-    board_format = _i18n_instance._texts.get('route', {}).get('board_format', [])
-    transfer_format = _i18n_instance._texts.get('route', {}).get('transfer_format', [])
-    alight_format = _i18n_instance._texts.get('route', {}).get('alight_format', [])
+    # 获取格式模板，使用公共接口
+    board_format = _i18n_instance.get_nested('route.board_format', [])
+    transfer_format = _i18n_instance.get_nested('route.transfer_format', [])
+    alight_format = _i18n_instance.get_nested('route.alight_format', [])
     
     # 如果没有格式模板，使用默认格式（中文格式）
     if not board_format:

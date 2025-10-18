@@ -17,7 +17,7 @@ from xianmetro.fetch import (
     get_line_color
 )
 from xianmetro.utils import calc_price, show_message, format_route_output_verbose, get_price_text
-from xianmetro.i18n import get_text
+from xianmetro.i18n import get_text, load_language
 
 
 def main():
@@ -207,10 +207,20 @@ def main():
         refresh_station_inputs(city)
         show_message(window, get_text("messages.city_switched", city=city))
 
+    def on_lang_changed():
+        """
+        语言切换事件处理函数
+        """
+        lang = window.get_lang()
+        load_language(lang)
+        show_message(window, get_text("messages.language_switched", language=lang))
+        window.reload_ui()
+
     # 连接信号和槽
     window.plan_btn.clicked.connect(on_plan_clicked)
     window.refresh_btn.clicked.connect(on_refresh_clicked)
     window.city_input.currentTextChanged.connect(on_city_changed)
+    window.lang_input.currentTextChanged.connect(on_lang_changed)
     window.route_selector.currentItemChanged.connect(window.on_route_selector_changed)
 
     # 显示窗口并启动应用程序

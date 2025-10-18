@@ -21,7 +21,7 @@ from qfluentwidgets import (
 from xianmetro.fetch import get_station_list
 from xianmetro.assets import UPDATE_LINK
 from xianmetro.ui.map_widget import MapWidget
-from xianmetro.i18n import get_text
+from xianmetro.i18n import get_text, get_language_list
 
 
 class MetroPlannerUI(QWidget):
@@ -89,14 +89,38 @@ class MetroPlannerUI(QWidget):
         input_layout = QVBoxLayout()
         input_layout.setSpacing(18)
 
+        # 语言选择
+        self.lang_label = QLabel(get_text("ui.current_lang"))
+        self.lang_label.setFont(QFont("Microsoft YaHei", 13))
+        self.lang_input = ComboBox()
+        self.lang_input.setPlaceholderText(get_text("ui.lang_placeholder"))
+        self.lang_input.setMaximumWidth(140)
+        self.lang_input.setFixedHeight(50)
+        self.lang_input.setFont(QFont("Microsoft YaHei", 12))
+
         # 城市选择
         self.city_label = QLabel(get_text("ui.current_city"))
         self.city_label.setFont(QFont("Microsoft YaHei", 13))
         self.city_input = ComboBox()
         self.city_input.setPlaceholderText(get_text("ui.city_placeholder"))
-        self.city_input.setMaximumWidth(320)
+        self.city_input.setMaximumWidth(140)
         self.city_input.setFixedHeight(50)
         self.city_input.setFont(QFont("Microsoft YaHei", 12))
+
+        lang_layout = QVBoxLayout()
+        lang_layout.addWidget(self.lang_label)
+        lang_layout.addWidget(self.lang_input)
+
+        city_layout = QVBoxLayout()
+        city_layout.addWidget(self.city_label)
+        city_layout.addWidget(self.city_input)
+
+        settings_layout = QHBoxLayout()
+        settings_layout.setSpacing(12)
+        settings_layout.addLayout(lang_layout)
+        settings_layout.addLayout(city_layout)
+
+        left_layout.addLayout(settings_layout)
 
         # 起点站选择
         self.start_label = QLabel(get_text("ui.start_station"))
@@ -116,18 +140,24 @@ class MetroPlannerUI(QWidget):
         self.end_input.setFixedHeight(50)
         self.end_input.setFont(QFont("Microsoft YaHei", 12))
 
-        # 填充下拉内容（站名和ID）
+        # 填充下拉内容（语言、站名和ID）
+        language_names = get_language_list()
         city_names = UPDATE_LINK.keys()
         station_names = get_station_list()
         station_ids = []
         start_options = list(dict.fromkeys(station_names + station_ids))
         end_options = start_options.copy()
+        self.lang_input.addItems(language_names)
         self.city_input.addItems(city_names)
         self.start_input.addItems(start_options)
         self.end_input.addItems(end_options)
 
-        input_layout.addWidget(self.city_label)
-        input_layout.addWidget(self.city_input)
+        # 设置语言和城市的默认值
+        default_lang = get_text("defaults.lang", "zh_cn")
+        default_city = get_text("defaults.city", "西安")
+        self.lang_input.setCurrentText(default_lang)
+        self.city_input.setCurrentText(default_city)
+
         input_layout.addWidget(self.start_label)
         input_layout.addWidget(self.start_input)
         input_layout.addWidget(self.end_label)
@@ -142,12 +172,12 @@ class MetroPlannerUI(QWidget):
 
         self.plan_btn = PrimaryPushButton(get_text("ui.plan_button"))
         self.plan_btn.setFont(QFont("Microsoft YaHei", 13))
-        self.plan_btn.setFixedWidth(180)
+        self.plan_btn.setMinimumWidth(180)
         self.plan_btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self.refresh_btn = PrimaryPushButton(get_text("ui.refresh_button"))
         self.refresh_btn.setFont(QFont("Microsoft YaHei", 13))
-        self.refresh_btn.setFixedWidth(180)
+        self.refresh_btn.setMinimumWidth(180)
         self.refresh_btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         btn_layout.addWidget(self.plan_btn)
@@ -434,6 +464,10 @@ class MetroPlannerUI(QWidget):
         """获取当前选择的城市"""
         return self.city_input.currentText()
 
+    def get_lang(self):
+        """获取当前选择的语言"""
+        return self.lang_input.currentText()
+
     def _on_zoom_in(self):
         """处理地图放大操作"""
         self.map_widget.zoom_in()
@@ -445,3 +479,24 @@ class MetroPlannerUI(QWidget):
     def _on_reset_zoom(self):
         """处理地图重置缩放操作"""
         self.map_widget.reset_zoom()
+
+    def reload_ui(self):
+        """重新加载UI文本以支持语言切换"""
+        self.setWindowTitle(get_text("ui.window_title"))
+        self.lang_label.setText(get_text("ui.current_lang"))
+        self.city_label.setText(get_text("ui.current_city"))
+        self.start_label.setText(get_text("ui.start_station"))
+        self.start_input.setPlaceholderText(get_text("ui.start_placeholder"))
+        self.end_label.setText(get_text("ui.end_station"))
+        self.end_input.setPlaceholderText(get_text("ui.end_placeholder"))
+        self.plan_btn.setText(get_text("ui.plan_button"))
+        self.refresh_btn.setText(get_text("ui.refresh_button"))
+        self.route_selector.setItemText(
+            "transfer", get_text("strategy.least_transfer"))
+        self.route_selector.setItemText(
+            "stops", get_text("strategy.least_stops"))
+        self.route_selector.setItemText(
+            "distance", get_text("strategy.shortest_distance"))
+        self.zoom_in_action.setText(get_text("ui.zoom_in"))
+        self.zoom_out_action.setText(get_text("ui.zoom_out"))
+        self.reset_zoom_action.setText(get_text("ui.reset_zoom"))

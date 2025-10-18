@@ -1,0 +1,76 @@
+# 西安地下鉄経路検索 - 日本語言語ファイル
+
+locale: 日本語
+
+# アプリケーション情報
+app:
+  title: "地下鉄経路検索 BY imoscarz"
+  author: "imoscarz"
+  github_url: "https://github.com/imoscarz/xianmetro"
+  welcome_message: "西安地下鉄経路検索へようこそ！"
+  easter_egg_message: "ムエルシーズは本当にかわいい!!!!!"
+
+# ウィンドウタイトルとラベル
+ui:
+  window_title: "地下鉄経路検索 BY imoscarz"
+  title_label: "地下鉄経路検索"
+  current_city: "現在の都市:"
+  current_lang: "現在の言語:"
+  start_station: "出発駅:"
+  end_station: "到着駅:"
+  start_placeholder: "出発駅名または駅IDを入力または選択"
+  end_placeholder: "到着駅名または駅IDを入力または選択"
+  city_placeholder: "都市を選択"
+  plan_button: "経路検索"
+  refresh_button: "経路更新"
+  zoom_in: "拡大"
+  zoom_out: "縮小"
+  reset_zoom: "リセット"
+  default_map_text: "最初に経路を検索してください"
+
+# 経路戦略
+strategy:
+  least_transfer: "最小乗換"
+  least_stops: "最小駅数"
+  shortest_distance: "最短距離"
+
+# メッセージプロンプト
+messages:
+  dialog_title: "プロンプト"
+  invalid_input: "有効な出発駅と到着駅を入力してください（駅名または駅ID対応）！"
+  same_station: "往復のご予定ですか？出発駅と到着駅は同じにできません！"
+  data_refreshed: "{city}地下鉄データの更新に成功しました！"
+  data_refresh_failed: "{city}地下鉄データの更新に失敗しました: {error}"
+  city_switched: "{city}に切り替え、地下鉄データを更新しました！"
+  language_switched: "言語を{language}に切り替えました！"
+  no_route_found: "経路が見つかりませんでした"
+  easter_egg_found: "イースターエッグを見つけました！\n西安地下鉄経路検索へようこそ！\n作者: imoscarz\nGitHub: https://github.com/imoscarz/xianmetro"
+  easter_egg_secret: "イースターエッグを見つけました！\nムエルシーズは本当にかわいい!!!!!"
+
+# 経路説明
+route:
+  board_at: "で"
+  take_line: "に乗車"
+  alight_at: "で"
+  alight: "下車"
+  transfer_at: "で"
+  from_line: "から"
+  transfer_to: "に乗換"
+
+# 情報表示
+info:
+  total_stops: "総駅数: {stops}"
+  total_distance: "総距離: {distance} km"
+  transfer_times: "乗換回数: {times}"
+  price_normal: "通常料金 {price} 元"
+  price_card: "地下鉄カード {price:.1f} 元"
+  price_student: "学生カード {price:.1f} 元"
+  price_free: "シニアカード/愛心カード/軍人カード 無料"
+  price_info: "料金: {normal} | {card} | {student} | {free}"
+  price_not_supported: "この都市の料金計算は現在対応していません"
+  price_format: "料金: 通常 {normal} 元 | 地下鉄カード {card:.1f} 元 | 学生カード {student:.1f} 元 | シニアカード/愛心カード/軍人カード 無料"
+
+# デフォルト値
+defaults:
+  city: "西安"
+  lang: "zh_cn"

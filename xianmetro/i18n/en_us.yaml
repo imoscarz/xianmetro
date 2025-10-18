@@ -1,0 +1,76 @@
+# Xi'an Metro Route Planner - English Language File
+
+locale: English(US)
+
+# Application Information
+app:
+  title: "Metro Route Planner BY imoscarz"
+  author: "imoscarz"
+  github_url: "https://github.com/imoscarz/xianmetro"
+  welcome_message: "Welcome to Xi'an Metro Route Planner!"
+  easter_egg_message: "Muelsyse is really cute!!!!!"
+
+# Window Titles and Labels
+ui:
+  window_title: "Metro Route Planner BY imoscarz"
+  title_label: "Metro Route Planner"
+  current_city: "Current City:"
+  current_lang: "Current Language:"
+  start_station: "Start Station:"
+  end_station: "End Station:"
+  start_placeholder: "Enter or select start station name/station ID"
+  end_placeholder: "Enter or select end station name/station ID"
+  city_placeholder: "Select city"
+  plan_button: "Plan Route"
+  refresh_button: "Refresh Route"
+  zoom_in: "Zoom In"
+  zoom_out: "Zoom Out"
+  reset_zoom: "Reset"
+  default_map_text: "Please plan a route first"
+
+# Route Strategies
+strategy:
+  least_transfer: "Least Transfers"
+  least_stops: "Fewest Stops"
+  shortest_distance: "Shortest Distance"
+
+# Message Prompts
+messages:
+  dialog_title: "Prompt"
+  invalid_input: "Please enter valid start and end stations (supports station names or IDs)!"
+  same_station: "Planning a round trip? Start and end stations cannot be the same!"
+  data_refreshed: "{city} metro data refreshed successfully!"
+  data_refresh_failed: "{city} metro data refresh failed: {error}"
+  city_switched: "Switched to {city}, metro data updated!"
+  language_switched: "Language switched to {language}!"
+  no_route_found: "No route found"
+  easter_egg_found: "You Found The Easter egg\nWelcome to Xi'an Metro Route Planner!\nAuthor: imoscarz\nGitHub:https://github.com/imoscarz/xianmetro"
+  easter_egg_secret: "You Found The Easter egg\nMuelsyse is really cute!!!!!"
+
+# Route Description
+route:
+  board_at: "At"
+  take_line: "Take"
+  alight_at: "At"
+  alight: "alight"
+  transfer_at: "At"
+  from_line: "from"
+  transfer_to: "transfer to"
+
+# Information Display
+info:
+  total_stops: "Total stops: {stops}"
+  total_distance: "Total distance: {distance} km"
+  transfer_times: "Transfer times: {times}"
+  price_normal: "Normal {price} yuan"
+  price_card: "Metro card {price:.1f} yuan"
+  price_student: "Student card {price:.1f} yuan"
+  price_free: "Senior card/Love card/Military card free"
+  price_info: "Fare: {normal} | {card} | {student} | {free}"
+  price_not_supported: "Fare calculation not currently supported for this city"
+  price_format: "Fare: Normal {normal} yuan | Metro card {card:.1f} yuan | Student card {student:.1f} yuan | Senior card/Love card/Military card free"
+
+# Default Values
+defaults:
+  city: "西安"
+  lang: "zh_cn"

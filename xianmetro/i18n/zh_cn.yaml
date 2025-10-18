@@ -1,5 +1,7 @@
 # 西安地铁路线规划器 - 中文语言文件
 
+locale: 中文(简体)
+
 # 应用程序信息
 app:
   title: "地铁路线规划 BY imoscarz"
@@ -12,7 +14,8 @@ app:
 ui:
   window_title: "地铁路线规划 BY imoscarz"
   title_label: "地铁路线规划"
-  current_city: "当前城市"
+  current_city: "当前城市:"
+  current_lang: "当前语言:"
   start_station: "起点站:"
   end_station: "终点站:"
   start_placeholder: "请输入或选择起点站名/站点ID"
@@ -39,6 +42,7 @@ messages:
   data_refreshed: "{city}地铁数据已刷新成功！"
   data_refresh_failed: "{city}地铁数据刷新失败: {error}"
   city_switched: "已切换至{city}，地铁数据已更新！"
+  language_switched: "语言已经切换为{language}！"
   no_route_found: "未找到方案"
   easter_egg_found: "You Found The Easter egg\n欢迎使用西安地铁线路规划器！\n作者: imoscarz\nGitHub:https://github.com/imoscarz/xianmetro"
   easter_egg_secret: "You Found The Easter egg\n缪尔塞斯真的很可爱！！！！！"
@@ -69,3 +73,4 @@ info:
 # 默认值
 defaults:
   city: "西安"
+  lang: "zh_cn"

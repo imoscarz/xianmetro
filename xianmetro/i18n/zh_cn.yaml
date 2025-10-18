@@ -56,6 +56,31 @@ route:
   transfer_at: "在"
   from_line: "由"
   transfer_to: "换乘"
+  # 格式化模板 - 定义不同场景下文本段的顺序和类型
+  # 类型: text(普通文本), station(站点), line(线路), next_line(下一条线路)
+  board_format:
+    - type: "text"
+      key: "board_at"
+    - type: "station"
+    - type: "text"
+      key: "take_line"
+    - type: "line"
+  transfer_format:
+    - type: "text"
+      key: "transfer_at"
+    - type: "station"
+    - type: "text"
+      key: "from_line"
+    - type: "line"
+    - type: "text"
+      key: "transfer_to"
+    - type: "next_line"
+  alight_format:
+    - type: "text"
+      key: "alight_at"
+    - type: "station"
+    - type: "text"
+      key: "alight"
 
 # 信息显示
 info:

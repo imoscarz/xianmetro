@@ -56,6 +56,31 @@ route:
   transfer_at: "At"
   from_line: "from"
   transfer_to: "transfer to"
+  # Format templates - define the order and type of text segments for different scenarios
+  # Types: text(plain text), station(station), line(line), next_line(next line)
+  board_format:
+    - type: "text"
+      key: "board_at"
+    - type: "station"
+    - type: "text"
+      key: "take_line"
+    - type: "line"
+  transfer_format:
+    - type: "text"
+      key: "transfer_at"
+    - type: "station"
+    - type: "text"
+      key: "from_line"
+    - type: "line"
+    - type: "text"
+      key: "transfer_to"
+    - type: "next_line"
+  alight_format:
+    - type: "text"
+      key: "alight_at"
+    - type: "station"
+    - type: "text"
+      key: "alight"
 
 # Information Display
 info:

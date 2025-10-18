@@ -87,12 +87,15 @@ class I18n:
         """
         获取嵌套的数据结构（如列表、字典）
         
+        与 get() 方法不同，此方法返回原始的数据结构（dict、list等），
+        而不会将其转换为字符串或进行格式化处理。
+        
         Args:
             key: 文本键，支持点号分隔的嵌套路径
             default: 默认值，当键不存在时返回
             
         Returns:
-            原始的数据结构（可能是dict、list等）
+            原始的数据结构（可能是dict、list等），未进行任何转换
         """
         keys = key.split('.')
         value = self._texts

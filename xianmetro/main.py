@@ -218,9 +218,10 @@ def main():
         """
         语言切换事件处理函数
         """
-        lang = window.get_lang()
-        load_language(lang)
-        show_message(window, get_text("messages.language_switched", language=lang))
+        lang_code = window.get_lang()
+        locale_display = window.lang_input.currentText()
+        load_language(lang_code)
+        show_message(window, get_text("messages.language_switched", language=locale_display))
         window.reload_ui()
 
     # 连接信号和槽

@@ -127,17 +127,25 @@ def load_language(language: str):
 
 def get_language_list():
     """
-    获取可用语言列表
+    获取可用语言列表（返回locale和文件名的映射）
 
     Returns:
-        list: 可用语言代码列表
+        dict: 语言locale到文件名的映射，例如 {"中文(简体)": "zh_cn", "English(US)": "en_us"}
     """
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    languages = []
+    languages = {}
     for file in os.listdir(current_dir):
         if file.endswith('.yaml'):
             lang_code = file[:-5]  # 去掉 .yaml 后缀
-            languages.append(lang_code)
+            yaml_file = os.path.join(current_dir, file)
+            try:
+                with open(yaml_file, 'r', encoding='utf-8') as f:
+                    data = yaml.safe_load(f) or {}
+                    locale = data.get('locale', lang_code)
+                    languages[locale] = lang_code
+            except Exception as e:
+                print(f"Warning: Error reading locale from {yaml_file}: {e}")
+                languages[lang_code] = lang_code
     return languages
 
 # 导出常用别名

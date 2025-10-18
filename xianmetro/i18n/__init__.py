@@ -82,6 +82,31 @@ class I18n:
                 return value
 
         return str(value) if not isinstance(value, dict) else default
+    
+    def get_nested(self, key: str, default=None):
+        """
+        获取嵌套的数据结构（如列表、字典）
+        
+        与 get() 方法不同，此方法返回原始的数据结构（dict、list等），
+        而不会将其转换为字符串或进行格式化处理。
+        
+        Args:
+            key: 文本键，支持点号分隔的嵌套路径
+            default: 默认值，当键不存在时返回
+            
+        Returns:
+            原始的数据结构（可能是dict、list等），未进行任何转换
+        """
+        keys = key.split('.')
+        value = self._texts
+
+        for k in keys:
+            if isinstance(value, dict):
+                value = value.get(k)
+            else:
+                return default
+
+        return value if value is not None else default
 
     def __call__(self, key: str, default: str = "", **kwargs) -> str:
         """
@@ -127,17 +152,25 @@ def load_language(language: str):
 
 def get_language_list():
     """
-    获取可用语言列表
+    获取可用语言列表（返回locale和文件名的映射）
 
     Returns:
-        list: 可用语言代码列表
+        dict: 语言locale到文件名的映射，例如 {"中文(简体)": "zh_cn", "English(US)": "en_us"}
     """
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    languages = []
+    languages = {}
     for file in os.listdir(current_dir):
         if file.endswith('.yaml'):
             lang_code = file[:-5]  # 去掉 .yaml 后缀
-            languages.append(lang_code)
+            yaml_file = os.path.join(current_dir, file)
+            try:
+                with open(yaml_file, 'r', encoding='utf-8') as f:
+                    data = yaml.safe_load(f) or {}
+                    locale = data.get('locale', lang_code)
+                    languages[locale] = lang_code
+            except Exception as e:
+                print(f"Warning: Error reading locale from {yaml_file}: {e}")
+                languages[lang_code] = lang_code
     return languages
 
 # 导出常用别名

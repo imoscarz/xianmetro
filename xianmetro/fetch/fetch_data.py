@@ -8,7 +8,7 @@
 import json
 import requests
 
-from xianmetro.assets import UPDATE_LINK
+from xianmetro.utils.load_config import get_update_link, get_update_links
 
 
 def get_metro_info(city="西安"):
@@ -21,7 +21,7 @@ def get_metro_info(city="西安"):
     Returns:
         dict: 包含地铁站点信息的JSON对象
     """
-    api_url = UPDATE_LINK.get(city, UPDATE_LINK["西安"])
+    api_url = get_update_link(city)
     headers = {
         "User-Agent": (
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "

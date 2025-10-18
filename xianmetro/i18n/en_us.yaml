@@ -56,6 +56,31 @@ route:
   transfer_at: "At"
   from_line: "from"
   transfer_to: "transfer to"
+  # Format templates - define the order and type of text segments for different scenarios
+  # Types: text(plain text), station(station), line(line), next_line(next line)
+  board_format:
+    - type: "text"
+      key: "board_at"
+    - type: "station"
+    - type: "text"
+      key: "take_line"
+    - type: "line"
+  transfer_format:
+    - type: "text"
+      key: "transfer_at"
+    - type: "station"
+    - type: "text"
+      key: "from_line"
+    - type: "line"
+    - type: "text"
+      key: "transfer_to"
+    - type: "next_line"
+  alight_format:
+    - type: "text"
+      key: "alight_at"
+    - type: "station"
+    - type: "text"
+      key: "alight"
 
 # Information Display
 info:
@@ -69,8 +94,3 @@ info:
   price_info: "Fare: {normal} | {card} | {student} | {free}"
   price_not_supported: "Fare calculation not currently supported for this city"
   price_format: "Fare: Normal {normal} yuan | Metro card {card:.1f} yuan | Student card {student:.1f} yuan | Senior card/Love card/Military card free"
-
-# Default Values
-defaults:
-  city: "西安"
-  lang: "zh_cn"

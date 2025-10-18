@@ -19,7 +19,7 @@ from qfluentwidgets import (
 )
 
 from xianmetro.fetch import get_station_list
-from xianmetro.assets import UPDATE_LINK
+from xianmetro.utils.load_config import get_update_links, get_default_city, get_default_lang
 from xianmetro.ui.map_widget import MapWidget
 from xianmetro.i18n import get_text, get_language_list
 
@@ -80,10 +80,10 @@ class MetroPlannerUI(QWidget):
         left_layout.setSpacing(32)
 
         # 标题
-        title = TitleLabel(get_text("ui.title_label"))
-        title.setFont(QFont("Microsoft YaHei", 22, QFont.Bold))
-        title.setAlignment(Qt.AlignCenter)
-        left_layout.addWidget(title)
+        self.title = TitleLabel(get_text("ui.title_label"))
+        self.title.setFont(QFont("Microsoft YaHei", 22, QFont.Bold))
+        self.title.setAlignment(Qt.AlignCenter)
+        left_layout.addWidget(self.title)
 
         # 输入区域
         input_layout = QVBoxLayout()
@@ -141,8 +141,9 @@ class MetroPlannerUI(QWidget):
         self.end_input.setFont(QFont("Microsoft YaHei", 12))
 
         # 填充下拉内容（语言、站名和ID）
-        language_names = get_language_list()
-        city_names = UPDATE_LINK.keys()
+        language_dict = get_language_list()  # 返回 {locale: lang_code} 字典
+        language_names = list(language_dict.keys())
+        city_names = get_update_links().keys()
         station_names = get_station_list()
         station_ids = []
         start_options = list(dict.fromkeys(station_names + station_ids))
@@ -151,11 +152,21 @@ class MetroPlannerUI(QWidget):
         self.city_input.addItems(city_names)
         self.start_input.addItems(start_options)
         self.end_input.addItems(end_options)
+        
+        # 存储语言映射关系
+        self.language_dict = language_dict
 
         # 设置语言和城市的默认值
-        default_lang = get_text("defaults.lang", "zh_cn")
-        default_city = get_text("defaults.city", "西安")
-        self.lang_input.setCurrentText(default_lang)
+        default_lang_code = get_default_lang()
+        default_city = get_default_city()
+        # 根据语言代码查找对应的locale显示名称
+        default_lang_locale = None
+        for locale, code in language_dict.items():
+            if code == default_lang_code:
+                default_lang_locale = locale
+                break
+        if default_lang_locale:
+            self.lang_input.setCurrentText(default_lang_locale)
         self.city_input.setCurrentText(default_city)
 
         input_layout.addWidget(self.start_label)
@@ -465,8 +476,9 @@ class MetroPlannerUI(QWidget):
         return self.city_input.currentText()
 
     def get_lang(self):
-        """获取当前选择的语言"""
-        return self.lang_input.currentText()
+        """获取当前选择的语言（返回语言代码而非locale显示名）"""
+        locale = self.lang_input.currentText()
+        return self.language_dict.get(locale, get_default_lang())
 
     def _on_zoom_in(self):
         """处理地图放大操作"""
@@ -483,6 +495,7 @@ class MetroPlannerUI(QWidget):
     def reload_ui(self):
         """重新加载UI文本以支持语言切换"""
         self.setWindowTitle(get_text("ui.window_title"))
+        self.title.setText(get_text("ui.title_label"))
         self.lang_label.setText(get_text("ui.current_lang"))
         self.city_label.setText(get_text("ui.current_city"))
         self.start_label.setText(get_text("ui.start_station"))
@@ -500,3 +513,17 @@ class MetroPlannerUI(QWidget):
         self.zoom_in_action.setText(get_text("ui.zoom_in"))
         self.zoom_out_action.setText(get_text("ui.zoom_out"))
         self.reset_zoom_action.setText(get_text("ui.reset_zoom"))
+        
+        # # 刷新语言下拉列表，保持当前选择
+        # current_lang_code = self.get_lang()
+        # language_dict = get_language_list()
+        # language_names = list(language_dict.keys())
+        # self.lang_input.clear()
+        # self.lang_input.addItems(language_names)
+        # self.language_dict = language_dict
+        #
+        # # 恢复当前语言的选择
+        # for locale, code in language_dict.items():
+        #     if code == current_lang_code:
+        #         self.lang_input.setCurrentText(locale)
+        #         break

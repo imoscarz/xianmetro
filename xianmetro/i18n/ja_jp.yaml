@@ -56,6 +56,31 @@ route:
   transfer_at: "で"
   from_line: "から"
   transfer_to: "に乗換"
+  # フォーマットテンプレート - 異なるシナリオでテキストセグメントの順序とタイプを定義
+  # タイプ: text(通常テキスト), station(駅), line(路線), next_line(次の路線)
+  board_format:
+    - type: "station"
+    - type: "text"
+      key: "board_at"
+    - type: "line"
+    - type: "text"
+      key: "take_line"
+  transfer_format:
+    - type: "station"
+    - type: "text"
+      key: "transfer_at"
+    - type: "line"
+    - type: "text"
+      key: "from_line"
+    - type: "next_line"
+    - type: "text"
+      key: "transfer_to"
+  alight_format:
+    - type: "station"
+    - type: "text"
+      key: "alight_at"
+    - type: "text"
+      key: "alight"
 
 # 情報表示
 info:
@@ -69,8 +94,3 @@ info:
   price_info: "料金: {normal} | {card} | {student} | {free}"
   price_not_supported: "この都市の料金計算は現在対応していません"
   price_format: "料金: 通常 {normal} 元 | 地下鉄カード {card:.1f} 元 | 学生カード {student:.1f} 元 | シニアカード/愛心カード/軍人カード 無料"
-
-# デフォルト値
-defaults:
-  city: "西安"
-  lang: "zh_cn"

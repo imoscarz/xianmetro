@@ -6,6 +6,7 @@ UI辅助工具模块
 
 from qfluentwidgets import MessageBox
 from xianmetro.i18n import get_text
+from xianmetro.utils.load_config import get_default_city
 
 
 def show_message(window, msg: str):
@@ -173,7 +174,7 @@ def get_price_text(distance: float, city: str, calc_price_func) -> str:
     Returns:
         str: 格式化的票价信息文本
     """
-    if city != get_text("defaults.city", "西安"):
+    if city != get_default_city():
         return get_text("info.price_not_supported", "暂不支持当前城市的票价计算")
 
     price = calc_price_func(int(distance + 0.5))

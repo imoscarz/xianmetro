@@ -19,7 +19,7 @@ from qfluentwidgets import (
 )
 
 from xianmetro.fetch import get_station_list
-from xianmetro.assets import UPDATE_LINK
+from xianmetro.utils.load_config import get_update_links, get_default_city, get_default_lang
 from xianmetro.ui.map_widget import MapWidget
 from xianmetro.i18n import get_text, get_language_list
 
@@ -142,7 +142,7 @@ class MetroPlannerUI(QWidget):
 
         # 填充下拉内容（语言、站名和ID）
         language_names = get_language_list()
-        city_names = UPDATE_LINK.keys()
+        city_names = get_update_links().keys()
         station_names = get_station_list()
         station_ids = []
         start_options = list(dict.fromkeys(station_names + station_ids))
@@ -153,8 +153,8 @@ class MetroPlannerUI(QWidget):
         self.end_input.addItems(end_options)
 
         # 设置语言和城市的默认值
-        default_lang = get_text("defaults.lang", "zh_cn")
-        default_city = get_text("defaults.city", "西安")
+        default_lang = get_default_lang()
+        default_city = get_default_city()
         self.lang_input.setCurrentText(default_lang)
         self.city_input.setCurrentText(default_city)
 

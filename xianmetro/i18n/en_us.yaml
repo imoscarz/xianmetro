@@ -69,8 +69,3 @@ info:
   price_info: "Fare: {normal} | {card} | {student} | {free}"
   price_not_supported: "Fare calculation not currently supported for this city"
   price_format: "Fare: Normal {normal} yuan | Metro card {card:.1f} yuan | Student card {student:.1f} yuan | Senior card/Love card/Military card free"
-
-# Default Values
-defaults:
-  city: "西安"
-  lang: "zh_cn"

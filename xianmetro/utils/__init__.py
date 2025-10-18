@@ -12,3 +12,10 @@ __description__ = "工具函数，包括UI辅助、距离计算、价格计算�
 from .calc_distance import *
 from .calc_price import *
 from .ui_helper import show_message, format_route_output_verbose, get_price_text
+from .load_config import (
+    load_config,
+    get_default_city,
+    get_default_lang,
+    get_update_links,
+    get_update_link
+)

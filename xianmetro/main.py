@@ -16,7 +16,14 @@ from xianmetro.fetch import (
     save_to_file,
     get_line_color
 )
-from xianmetro.utils import calc_price, show_message, format_route_output_verbose, get_price_text
+from xianmetro.utils import (
+    calc_price,
+    show_message,
+    format_route_output_verbose,
+    get_price_text,
+    get_default_city,
+    get_default_lang
+)
 from xianmetro.i18n import get_text, load_language
 
 
@@ -25,7 +32,7 @@ def main():
     主函数：初始化应用程序并设置事件处理
     """
     # 获取默认城市
-    default_city = get_text("defaults.city", "西安")
+    default_city = get_default_city()
     
     # 初始化默认城市数据
     save_to_file(parse_metro_info(get_metro_info(default_city)))

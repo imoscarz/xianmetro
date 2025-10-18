@@ -69,8 +69,3 @@ info:
   price_info: "料金: {normal} | {card} | {student} | {free}"
   price_not_supported: "この都市の料金計算は現在対応していません"
   price_format: "料金: 通常 {normal} 元 | 地下鉄カード {card:.1f} 元 | 学生カード {student:.1f} 元 | シニアカード/愛心カード/軍人カード 無料"
-
-# デフォルト値
-defaults:
-  city: "西安"
-  lang: "zh_cn"

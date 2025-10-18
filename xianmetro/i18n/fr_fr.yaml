@@ -69,8 +69,3 @@ info:
   price_info: "Tarif : {normal} | {card} | {student} | {free}"
   price_not_supported: "Calcul du tarif non pris en charge pour cette ville actuellement"
   price_format: "Tarif : Normal {normal} yuans | Carte métro {card:.1f} yuans | Carte étudiant {student:.1f} yuans | Carte sénior/Carte amour/Carte militaire gratuite"
-
-# Valeurs par défaut
-defaults:
-  city: "西安"
-  lang: "zh_cn"

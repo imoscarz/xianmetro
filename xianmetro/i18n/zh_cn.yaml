@@ -70,7 +70,3 @@ info:
   price_not_supported: "暂不支持当前城市的票价计算"
   price_format: "票价: 普通{normal}元 | 地铁卡{card:.1f}元 | 学生卡{student:.1f}元 | 老年卡/爱心卡/拥军卡免费"
 
-# 默认值
-defaults:
-  city: "西安"
-  lang: "zh_cn"

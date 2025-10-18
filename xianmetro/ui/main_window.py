@@ -80,10 +80,10 @@ class MetroPlannerUI(QWidget):
         left_layout.setSpacing(32)
 
         # 标题
-        title = TitleLabel(get_text("ui.title_label"))
-        title.setFont(QFont("Microsoft YaHei", 22, QFont.Bold))
-        title.setAlignment(Qt.AlignCenter)
-        left_layout.addWidget(title)
+        self.title = TitleLabel(get_text("ui.title_label"))
+        self.title.setFont(QFont("Microsoft YaHei", 22, QFont.Bold))
+        self.title.setAlignment(Qt.AlignCenter)
+        left_layout.addWidget(self.title)
 
         # 输入区域
         input_layout = QVBoxLayout()
@@ -495,6 +495,7 @@ class MetroPlannerUI(QWidget):
     def reload_ui(self):
         """重新加载UI文本以支持语言切换"""
         self.setWindowTitle(get_text("ui.window_title"))
+        self.title.setText(get_text("ui.title_label"))
         self.lang_label.setText(get_text("ui.current_lang"))
         self.city_label.setText(get_text("ui.current_city"))
         self.start_label.setText(get_text("ui.start_station"))
@@ -513,16 +514,16 @@ class MetroPlannerUI(QWidget):
         self.zoom_out_action.setText(get_text("ui.zoom_out"))
         self.reset_zoom_action.setText(get_text("ui.reset_zoom"))
         
-        # 刷新语言下拉列表，保持当前选择
-        current_lang_code = self.get_lang()
-        language_dict = get_language_list()
-        language_names = list(language_dict.keys())
-        self.lang_input.clear()
-        self.lang_input.addItems(language_names)
-        self.language_dict = language_dict
-        
-        # 恢复当前语言的选择
-        for locale, code in language_dict.items():
-            if code == current_lang_code:
-                self.lang_input.setCurrentText(locale)
-                break
+        # # 刷新语言下拉列表，保持当前选择
+        # current_lang_code = self.get_lang()
+        # language_dict = get_language_list()
+        # language_names = list(language_dict.keys())
+        # self.lang_input.clear()
+        # self.lang_input.addItems(language_names)
+        # self.language_dict = language_dict
+        #
+        # # 恢复当前语言的选择
+        # for locale, code in language_dict.items():
+        #     if code == current_lang_code:
+        #         self.lang_input.setCurrentText(locale)
+        #         break

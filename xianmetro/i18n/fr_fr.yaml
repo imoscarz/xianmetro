@@ -1,0 +1,74 @@
+# Planificateur d'itinéraire du métro de Xi'an - Fichier de langue française
+
+# Informations de l'application
+app:
+  title: "Planificateur d'itinéraire métro PAR imoscarz"
+  author: "imoscarz"
+  github_url: "https://github.com/imoscarz/xianmetro"
+  welcome_message: "Bienvenue dans le planificateur d'itinéraire du métro de Xi'an !"
+  easter_egg_message: "Muelsyse est vraiment mignonne!!!!!"
+
+# Titres et étiquettes de l'interface
+ui:
+  window_title: "Planificateur d'itinéraire métro PAR imoscarz"
+  title_label: "Planificateur d'itinéraire métro"
+  current_city: "Ville actuelle :"
+  current_lang: "Langue actuelle :"
+  start_station: "Station de départ :"
+  end_station: "Station d'arrivée :"
+  start_placeholder: "Entrez ou sélectionnez le nom/l'ID de la station de départ"
+  end_placeholder: "Entrez ou sélectionnez le nom/l'ID de la station d'arrivée"
+  city_placeholder: "Sélectionnez une ville"
+  plan_button: "Calculer l'itinéraire"
+  refresh_button: "Actualiser l'itinéraire"
+  zoom_in: "Zoomer"
+  zoom_out: "Dézoomer"
+  reset_zoom: "Réinitialiser"
+  default_map_text: "Veuillez d'abord calculer un itinéraire"
+
+# Stratégies d'itinéraire
+strategy:
+  least_transfer: "Moins de correspondances"
+  least_stops: "Moins d'arrêts"
+  shortest_distance: "Distance la plus courte"
+
+# Messages
+messages:
+  dialog_title: "Message"
+  invalid_input: "Veuillez entrer des stations de départ et d'arrivée valides (supporte les noms ou ID de station) !"
+  same_station: "Vous planifiez un aller-retour ? Les stations de départ et d'arrivée ne peuvent pas être identiques !"
+  data_refreshed: "Données du métro de {city} actualisées avec succès !"
+  data_refresh_failed: "Échec de l'actualisation des données du métro de {city} : {error}"
+  city_switched: "Passage à {city}, données du métro mises à jour !"
+  language_switched: "Langue changée pour {language} !"
+  no_route_found: "Aucun itinéraire trouvé"
+  easter_egg_found: "Vous avez trouvé l'easter egg\nBienvenue dans le planificateur d'itinéraire du métro de Xi'an !\nAuteur : imoscarz\nGitHub : https://github.com/imoscarz/xianmetro"
+  easter_egg_secret: "Vous avez trouvé l'easter egg\nMuelsyse est vraiment mignonne!!!!!"
+
+# Description de l'itinéraire
+route:
+  board_at: "À"
+  take_line: "Prendre la ligne"
+  alight_at: "À"
+  alight: "descendre"
+  transfer_at: "À"
+  from_line: "de la ligne"
+  transfer_to: "correspondre à"
+
+# Affichage des informations
+info:
+  total_stops: "Nombre total d'arrêts : {stops}"
+  total_distance: "Distance totale : {distance} km"
+  transfer_times: "Nombre de correspondances : {times}"
+  price_normal: "Normal {price} yuans"
+  price_card: "Carte métro {price:.1f} yuans"
+  price_student: "Carte étudiant {price:.1f} yuans"
+  price_free: "Carte sénior/Carte amour/Carte militaire gratuite"
+  price_info: "Tarif : {normal} | {card} | {student} | {free}"
+  price_not_supported: "Calcul du tarif non pris en charge pour cette ville actuellement"
+  price_format: "Tarif : Normal {normal} yuans | Carte métro {card:.1f} yuans | Carte étudiant {student:.1f} yuans | Carte sénior/Carte amour/Carte militaire gratuite"
+
+# Valeurs par défaut
+defaults:
+  city: "西安"
+  lang: "zh_cn"

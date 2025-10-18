@@ -116,6 +116,29 @@ def get_text(key: str, default: str = "", **kwargs) -> str:
     """
     return _i18n_instance.get(key, default, **kwargs)
 
+def load_language(language: str):
+    """
+    加载指定语言的文本资源
+
+    Args:
+        language: 语言代码
+    """
+    _i18n_instance._load_language(language)
+
+def get_language_list():
+    """
+    获取可用语言列表
+
+    Returns:
+        list: 可用语言代码列表
+    """
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    languages = []
+    for file in os.listdir(current_dir):
+        if file.endswith('.yaml'):
+            lang_code = file[:-5]  # 去掉 .yaml 后缀
+            languages.append(lang_code)
+    return languages
 
 # 导出常用别名
 t = get_text
